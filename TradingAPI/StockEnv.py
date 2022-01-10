@@ -39,6 +39,7 @@ class StockEnv:
 
     def __init__(self, ticker, startBal, period, interval):
         self.ticker = ticker
+        self.dateString = 'Date'
         self.startbal = int(startBal)
         self.period = period
         self.interval = interval
@@ -47,7 +48,13 @@ class StockEnv:
         data = self.LoadData()
         self.Data = data
         firstrow = self.Data.iloc[0]
-        self.State = State(firstrow['Date'], firstrow['Open'], firstrow['Volume'], 0, startBal)
+
+        if 'Date' in self.Data:
+          self.dateString = 'Date'
+        else:
+          self.dateString = 'Datetime'
+
+        self.State = State(firstrow[self.dateString], firstrow['Open'], firstrow['Volume'], 0, startBal)
         self.States = []
 
     def LoadData(self):
@@ -77,7 +84,7 @@ class StockEnv:
             self.Finished = True
         else:
             row = self.Data.iloc[self.TimeStep]
-            self.State = State(date=(row['Date']), price=(row['Open']), volume=(row['Volume']),
+            self.State = State(date=(row[self.dateString]), price=(row['Open']), volume=(row['Volume']),
                                shares=self.State.Shares, balance=self.State.Balance)
 
     def Buy(self):
