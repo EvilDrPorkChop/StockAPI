@@ -49,6 +49,8 @@ export class StateData{
   public states: State[] = [];
   public opens: number[] = [];
   public dates: any[] = [];
+  public macd: number[] = [];
+  public signals: number[] = [];
 }
 
 export class State{

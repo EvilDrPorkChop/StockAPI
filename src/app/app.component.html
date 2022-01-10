@@ -123,7 +123,7 @@
         </a>
         <a class="chart-card">
           <canvas #chart baseChart
-                  [data]="volumeData"
+                  [data]="macData"
                   [type]="'line'"
                   [options]="options('#be4a1c')">
           </canvas>
@@ -133,6 +133,20 @@
                   [data]="shareData"
                   [type]="'line'"
                   [options]="options('#4d21d2')">
+          </canvas>
+        </a>
+        <a class="chart-card">
+          <canvas #chart baseChart
+                  [data]="volumeData"
+                  [type]="'line'"
+                  [options]="options('#be4a1c')">
+          </canvas>
+        </a>
+        <a class="chart-card">
+          <canvas #chart baseChart
+                  [data]="volumeData"
+                  [type]="'line'"
+                  [options]="options('#be4a1c')">
           </canvas>
         </a>
         <a class="card" style="width: auto">

@@ -21,6 +21,7 @@ export class AppComponent {
   public valueData: Data = new Data();
   public volumeData: Data = new Data();
   public shareData: Data = new Data();
+  public macData: Data = new Data();
   public chosenTicker: string = "aapl";
   public periods: Period[] = this.generatePeriods();
   public intervals: Interval[] = this.generateIntervals();
@@ -71,16 +72,22 @@ export class AppComponent {
     let valueData = new Data();
     let volumeData = new Data();
     let shareData = new Data();
+    let macData = new Data();
     let valueArray = [];
     let priceArray = [];
     let volumeArray = [];
     let shareArray = [];
+    let macdArray = [];
+    let signalArray = [];
     let volumeDataset = new DataSet();
     let shareDataset = new DataSet();
     let valueDataset = new DataSet();
     let priceDataset = new DataSet();
+    let macdDataset = new DataSet();
+    let signalDataset = new DataSet();
 
     for(let i = 0; i <  result.states.length; i++){
+      console.log(i);
       valueArray.push({
         x: result.states[i].Date,
         y: result.states[i].Value,
@@ -96,6 +103,14 @@ export class AppComponent {
       shareArray.push({
         x: result.states[i].Date,
         y: result.states[i].Shares,
+      })
+      macdArray.push({
+        x: result.states[i].Date,
+        y: result.macd[i],
+      })
+      signalArray.push({
+        x: result.states[i].Date,
+        y: result.signals[i],
       })
       if(result.states[i].Action == "Buy"){
         valueDataset.pointBackgroundColor.push('green');
@@ -117,6 +132,16 @@ export class AppComponent {
         shareDataset.pointStyle.push('triangle');
         shareDataset.pointRotation.push(0);
         shareDataset.pointRadius.push(8);
+
+        macdDataset.pointBackgroundColor.push('green');
+        macdDataset.pointStyle.push('triangle');
+        macdDataset.pointRotation.push(0);
+        macdDataset.pointRadius.push(8);
+
+        signalDataset.pointBackgroundColor.push('green');
+        signalDataset.pointStyle.push('triangle');
+        signalDataset.pointRotation.push(0);
+        signalDataset.pointRadius.push(8);
       }
       else if (result.states[i].Action == "Sell"){
         valueDataset.pointBackgroundColor.push('red');
@@ -138,6 +163,16 @@ export class AppComponent {
         shareDataset.pointStyle.push('triangle');
         shareDataset.pointRotation.push(180);
         shareDataset.pointRadius.push(8);
+
+        macdDataset.pointBackgroundColor.push('red');
+        macdDataset.pointStyle.push('triangle');
+        macdDataset.pointRotation.push(180);
+        macdDataset.pointRadius.push(8);
+
+        signalDataset.pointBackgroundColor.push('red');
+        signalDataset.pointStyle.push('triangle');
+        signalDataset.pointRotation.push(180);
+        signalDataset.pointRadius.push(8);
       }
       else {
         valueDataset.pointBackgroundColor.push('white');
@@ -159,26 +194,44 @@ export class AppComponent {
         shareDataset.pointStyle.push('circle');
         shareDataset.pointRotation.push(0);
         shareDataset.pointRadius.push(0);
+
+        macdDataset.pointBackgroundColor.push('white');
+        macdDataset.pointStyle.push('circle');
+        macdDataset.pointRotation.push(0);
+        macdDataset.pointRadius.push(0);
+
+        signalDataset.pointBackgroundColor.push('white');
+        signalDataset.pointStyle.push('circle');
+        signalDataset.pointRotation.push(0);
+        signalDataset.pointRadius.push(0);
       }
     }
     valueDataset.data = valueArray;
     priceDataset.data = priceArray;
     volumeDataset.data = volumeArray;
     shareDataset.data = shareArray;
+    macdDataset.data = macdArray;
+    signalDataset.data = signalArray;
 
     priceDataset.label = 'Price';
     valueDataset.label = 'Value';
     volumeDataset.label = 'Volume';
     shareDataset.label = 'Shares';
+    macdDataset.label = 'MACD';
+    signalDataset.label = 'Signal';
 
     valueData.datasets.push(valueDataset);
     tickerdata.datasets.push(priceDataset);
     volumeData.datasets.push(volumeDataset);
     shareData.datasets.push(shareDataset);
+    macData.datasets.push(macdDataset);
+    macData.datasets.push(signalDataset);
+
     this.tickerData = tickerdata;
     this.valueData = valueData;
     this.volumeData = volumeData;
     this.shareData = shareData;
+    this.macData = macData;
   }
 
   public options(lineColour: any): ChartOptions|any {

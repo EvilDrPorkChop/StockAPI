@@ -11,9 +11,9 @@ def getAverage(prices):
     return total/len(prices)
 
 def calcMACD(prices):
-    n1 = 5
-    n2 = 10
-    n3 = 8
+    n1 = 12
+    n2 = 26
+    n3 = 9
     ema1 = []
     ema2 = []
     ema3 = []
@@ -22,14 +22,14 @@ def calcMACD(prices):
 
     for i in range(0,len(prices)):
         if i >= n1:
-            ema = prices[i] * (2 / n1 + 1) + (ema * (1 - (2 / (n1 + 1))))
+            ema = prices[i] * (2 / (n1 + 1)) + (ema * (1 - (2 / (n1 + 1))))
         ema1.append(ema)
 
     ema = getAverage(prices[0:n2])
 
     for i in range(0, len(prices)):
         if i >= n2:
-            ema = prices[i] * (2 / n2 + 1) + (ema * (1 - (2 / (n2 + 1))))
+            ema = prices[i] * (2 / (n2 + 1)) + (ema * (1 - (2 / (n2 + 1))))
         ema2.append(ema)
 
     macDs = []
@@ -40,11 +40,8 @@ def calcMACD(prices):
 
     for i in range(0, len(prices)):
         if i >= n3:
-            ema = prices[i] * (2 / n3 + 1) + (ema * (1 - (2 / (n3 + 1))))
+            ema = macDs[i] * (2 / (n3 + 1)) + (ema * (1 - (2 / (n3 + 1))))
         ema3.append(ema)
-
-
-
 
     return macDs, ema3
 
