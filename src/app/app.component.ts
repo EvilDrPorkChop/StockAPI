@@ -89,7 +89,6 @@ export class AppComponent {
     let signalDataset = new DataSet();
 
     for(let i = 0; i <  result.states.length; i++){
-      console.log(i);
       valueArray.push({
         x: result.states[i].Date,
         y: result.states[i].Value,
