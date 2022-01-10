@@ -11,9 +11,10 @@ class Trader:
         self.prices = []
 
     def decide(self, state):
-      self.env.Step('Buy')
+      self.env.Buy()
+      self.env.AdvanceTime()
 
 
     def Run(self):
         while not self.env.Finished:
-            self.env.Step(self.decide(self.env.State))
+            self.decide(self.env.State)

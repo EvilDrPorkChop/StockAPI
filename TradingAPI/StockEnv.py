@@ -10,6 +10,10 @@ from pandas_datareader import data as pdr
 import copy
 
 
+class Share:
+  def __init__(self, price):
+    self.boughtAt = price
+
 class State:
     def serialize(self):
         return {
@@ -45,6 +49,7 @@ class StockEnv:
         self.interval = interval
         self.Finished = False
         self.TimeStep = 0
+        self.Shares = []
         data = self.LoadData()
         self.Data = data
         firstrow = self.Data.iloc[0]
@@ -63,16 +68,6 @@ class StockEnv:
         data = ftse.history(period=self.period, interval=self.interval).dropna()
         data = data.reset_index()
         return data
-
-    def Step(self, action):
-        if action == 'Buy':
-            self.Buy()
-        elif action == 'Sell':
-            self.Sell()
-        else:
-            self.Hold()
-
-        self.AdvanceTime()
 
     def AdvanceTime(self):
         self.State.calcValue()
@@ -94,14 +89,16 @@ class StockEnv:
             self.State.Balance -= self.State.Price
             self.State.Shares += 1
             self.State.Action = "Buy"
+            self.Shares.append(Share(self.State.Price))
 
     def Hold(self):
         self.State.Action = "Hold"
 
-    def Sell(self):
-        if self.State.Shares < 1:
+    def Sell(self, share):
+        if self.State.Shares < 1 or not self.Shares.__contains__(share):
             self.Hold()
         else:
             self.State.Balance += self.State.Price
             self.State.Shares -= 1
             self.State.Action = "Sell"
+            self.Shares.remove(share)
