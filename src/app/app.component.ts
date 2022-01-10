@@ -76,6 +76,7 @@ export class AppComponent {
     let shareData = new Data();
     let macData = new Data();
     let valueArray = [];
+    let longArray = []
     let priceArray = [];
     let volumeArray = [];
     let shareArray = [];
@@ -84,6 +85,7 @@ export class AppComponent {
     let volumeDataset = new DataSet();
     let shareDataset = new DataSet();
     let valueDataset = new DataSet();
+    let longDataset = new DataSet();
     let priceDataset = new DataSet();
     let macdDataset = new DataSet();
     let signalDataset = new DataSet();
@@ -92,6 +94,10 @@ export class AppComponent {
       valueArray.push({
         x: result.states[i].Date,
         y: result.states[i].Value,
+      });
+      longArray.push({
+        x: result.longs[i].Date,
+        y: result.longs[i].Value,
       });
       priceArray.push({
         x: result.dates[i],
@@ -208,6 +214,7 @@ export class AppComponent {
       }
     }
     valueDataset.data = valueArray;
+    longDataset.data = longArray;
     priceDataset.data = priceArray;
     volumeDataset.data = volumeArray;
     shareDataset.data = shareArray;
@@ -216,6 +223,7 @@ export class AppComponent {
 
     priceDataset.label = 'Price';
     valueDataset.label = 'Value';
+    longDataset.label = 'Long Investment';
     volumeDataset.label = 'Volume';
     shareDataset.label = 'Shares';
     macdDataset.label = 'MACD';
@@ -223,6 +231,7 @@ export class AppComponent {
 
     priceDataset.borderColor = "#1097a2"
     valueDataset.borderColor = "#216c17"
+    longDataset.borderColor = "#6ea91a"
     volumeDataset.borderColor = "#0045e7"
     shareDataset.borderColor = "#3bb01e"
     macdDataset.borderColor = "#ab1c6d"
@@ -230,12 +239,14 @@ export class AppComponent {
 
     priceDataset.backgroundColor = priceDataset.borderColor;
     valueDataset.backgroundColor = valueDataset.borderColor;
+    longDataset.backgroundColor = longDataset.borderColor;
     volumeDataset.backgroundColor = volumeDataset.borderColor;
     shareDataset.backgroundColor = shareDataset.borderColor;
     macdDataset.backgroundColor = macdDataset.borderColor;
     signalDataset.backgroundColor = signalDataset.borderColor;
 
     valueData.datasets.push(valueDataset);
+    valueData.datasets.push(longDataset);
     tickerdata.datasets.push(priceDataset);
     volumeData.datasets.push(volumeDataset);
     shareData.datasets.push(shareDataset);

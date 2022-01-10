@@ -47,6 +47,7 @@ export class TickerData{
 
 export class StateData{
   public states: State[] = [];
+  public longs: State[] = [];
   public opens: number[] = [];
   public dates: any[] = [];
   public macd: number[] = [];

@@ -51,19 +51,28 @@ class Trader:
         self.lastboughtAt = float(0)
         self.env = StockEnv.StockEnv(ticker, startbal, period, interval)
         self.prices = []
-        self.MACD = 0
 
     def decide(self, state):
-        self.prices.append(state.Price)
-
-        if state.Balance > state.Price and state.Price < getAverage(self.prices):
-            self.lastboughtAt = state.Price
-            return 'Buy'
-        elif state.Shares > 0 and state.Price>self.lastboughtAt:
-            return 'Sell'
+      self.prices.append(state.Price)
+      timestep = len(self.prices)-1
+      if timestep > 10:
+        macd, sig = calcMACD(prices = self.prices)
+        if macd[timestep] > sig[timestep]:
+          if macd[timestep] < macd[timestep-1]:
+            self.env.Step('Buy')
+          else:
+            self.env.Step('Hold')
+        elif sig[timestep] > macd[timestep]:
+          if macd[timestep] > macd[timestep-1]:
+            self.env.Step('Sell')
+          else:
+            self.env.Step('Hold')
         else:
-            return 'Hold'
+          self.env.Step('Hold')
+      else:
+        self.env.Step('Hold')
+
 
     def Run(self):
         while not self.env.Finished:
-            self.env.Step(self.decide(self.env.State))
+            self.decide(self.env.State)
