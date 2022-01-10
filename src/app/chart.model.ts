@@ -13,6 +13,8 @@ export class Data {
 export class DataSet {
   label: string = "";
   data: Array<number| DataItem> = new Array<number | DataItem>();
+  borderColor = "#be4a1c"
+  backgroundColor = "#be4a1c"
   pointBackgroundColor: Array<string> = new Array<string>();
   pointRadius: Array<number> = new Array<number>();
   pointStyle: Array<string> = new Array<string>();

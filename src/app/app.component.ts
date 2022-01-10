@@ -62,6 +62,8 @@ export class AppComponent {
     }
     openDataset.data = openArray;
     openDataset.label = 'Open';
+    openDataset.borderColor = "#02ffff"
+    openDataset.backgroundColor = "#02ffff"
     newData.datasets.push(openDataset);
 
     this.tickerData = newData;
@@ -220,6 +222,20 @@ export class AppComponent {
     macdDataset.label = 'MACD';
     signalDataset.label = 'Signal';
 
+    priceDataset.borderColor = "#1097a2"
+    valueDataset.borderColor = "#216c17"
+    volumeDataset.borderColor = "#0045e7"
+    shareDataset.borderColor = "#3bb01e"
+    macdDataset.borderColor = "#ab1c6d"
+    signalDataset.borderColor = "#918618"
+
+    priceDataset.backgroundColor = priceDataset.borderColor;
+    valueDataset.backgroundColor = valueDataset.borderColor;
+    volumeDataset.backgroundColor = volumeDataset.borderColor;
+    shareDataset.backgroundColor = shareDataset.borderColor;
+    macdDataset.backgroundColor = macdDataset.borderColor;
+    signalDataset.backgroundColor = signalDataset.borderColor;
+
     valueData.datasets.push(valueDataset);
     tickerdata.datasets.push(priceDataset);
     volumeData.datasets.push(volumeDataset);
@@ -234,11 +250,10 @@ export class AppComponent {
     this.macData = macData;
   }
 
-  public options(lineColour: any): ChartOptions|any {
+  public options(): ChartOptions|any {
     return{
       responsive: true,
       maintainAspectRatio: false,
-      borderColor: lineColour,
       scales: {
         x:{
           type: 'time',
