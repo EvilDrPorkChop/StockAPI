@@ -11,9 +11,9 @@ def getAverage(prices):
     return total/len(prices)
 
 def calcMACD(prices):
-    n1 = 12
-    n2 = 26
-    n3 = 9
+    n1 = 5
+    n2 = 10
+    n3 = 8
     ema1 = []
     ema2 = []
     ema3 = []
