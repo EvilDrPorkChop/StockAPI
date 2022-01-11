@@ -94,11 +94,19 @@ class StockEnv:
     def Hold(self):
         self.State.Action = "Hold"
 
-    def Sell(self, share):
-        if self.State.Shares < 1 or not self.Shares.__contains__(share):
+    def Sell(self, shares):
+      if len(shares) > 1:
+        for share in shares:
+          if self.Shares.__contains__(share):
+            self.State.Balance += self.State.Price
+            self.State.Shares -= 1
+            self.State.Action = "Sell"
+            self.Shares.remove(share)
+      else:
+        if self.State.Shares < 1 or not self.Shares.__contains__(shares[0]):
             self.Hold()
         else:
             self.State.Balance += self.State.Price
             self.State.Shares -= 1
             self.State.Action = "Sell"
-            self.Shares.remove(share)
+            self.Shares.remove(shares[0])

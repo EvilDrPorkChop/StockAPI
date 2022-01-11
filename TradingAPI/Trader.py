@@ -60,11 +60,11 @@ class Trader:
     timestep = len(self.prices) - 1
     if timestep > 10:
       macd, sig = calcMACD(prices=self.prices)
-      if macd[timestep] > sig[timestep]:
+      if sig[timestep] < macd[timestep]:
         self.env.Buy()
       elif sig[timestep] > macd[timestep]:
-        s = self.findIfAShareIsLower(price=state.Price)
-        if s is not False:
+        s = self.findSharesLower(price=state.Price)
+        if s is not False and len(s) > 1:
           self.env.Sell(s)
         else:
           self.env.Hold()
@@ -77,14 +77,18 @@ class Trader:
 
     self.env.AdvanceTime()
 
-  def findIfAShareIsLower(self, price):
+  def findSharesLower(self, price):
+    lower = []
     if len(self.env.Shares) < 1:
       return False
 
     for s in self.env.Shares:
       if s.boughtAt < price:
-        return s
+        lower.append(s)
+
+    return lower
 
   def Run(self):
     while not self.env.Finished:
       self.decide(self.env.State)
+
