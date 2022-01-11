@@ -1,4 +1,5 @@
 import StockEnv
+import math
 
 
 def calcValue(state):
@@ -10,6 +11,14 @@ def getAverage(prices):
   for p in prices:
     total += p
   return total / len(prices)
+
+
+def getStdDeviation(macd, sig):
+  totaldif = 0
+  for i in range(len(macd)):
+    totaldif+= math.fabs(macd[i]-sig[i])
+
+  return totaldif/len(macd)
 
 
 def calcMACD(prices):
@@ -61,29 +70,18 @@ class Trader:
     timestep = len(self.prices) - 1
     if timestep > 10:
       macd, sig = calcMACD(prices=self.prices)
+      std = getStdDeviation(macd, sig)
 
-      if self.decided == 'Hold':
-        if sig[timestep] < macd[timestep]:
-          self.tryToBuy(state, 'Hold')
-        elif sig[timestep] > macd[timestep]:
-          self.tryToSell(state, 'Hold')
+      if sig[timestep] < macd[timestep] and std < math.fabs(macd[timestep] - sig[timestep]) and macd[timestep] > 0:
+        self.tryToBuy(state, 'Hold')
+      elif sig[timestep] > macd[timestep] and std < math.fabs(macd[timestep] - sig[timestep] and macd[timestep] < 0):
+        self.tryToSell(state, 'Hold')
 
-      elif self.decided == 'Buy':
-        if sig[timestep] > macd[timestep] > macd[timestep - 1]:
-          self.tryToSell(state, 'Hold')
-        else:
-          self.tryToBuy(state, 'Hold')
-
-      elif self.decided == 'Sell':
-        if sig[timestep] > macd[timestep] > macd[timestep - 1]:
-          self.tryToBuy(state, 'Hold')
-        else:
-          self.tryToSell(state, 'Hold')
 
     self.env.AdvanceTime()
 
   def tryToSell(self, state, decisionIfCant):
-    s = self.findSharesLower(price=state.Price)
+    s = self.findSharesLower(price=state.Price, number=1)
     if s is not False and len(s) > 0:
       self.env.Sell(s)
       self.decided = 'Sell'
@@ -96,7 +94,7 @@ class Trader:
 
   def tryToBuy(self, state, decisionIfCant):
     if state.Balance > state.Price:
-      self.env.Buy(int(state.Balance/state.Price))
+      self.env.Buy(1)
       self.decided = 'Buy'
     else:
       if decisionIfCant == 'Sell':
@@ -105,14 +103,18 @@ class Trader:
         self.env.Hold()
         self.decided = 'Hold'
 
-  def findSharesLower(self, price):
+  def findSharesLower(self, price, number):
     lower = []
+    numb = 0
     if len(self.env.Shares) < 1:
       return False
 
     for s in self.env.Shares:
       if s.boughtAt < price:
         lower.append(s)
+        numb += 1
+        if numb > number:
+          break
 
     return lower
 

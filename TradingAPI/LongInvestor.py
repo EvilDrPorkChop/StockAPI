@@ -11,7 +11,7 @@ class Trader:
         self.prices = []
 
     def decide(self, state):
-      self.env.Buy()
+      self.env.Buy(int(state.Balance/state.Price))
       self.env.AdvanceTime()
 
 

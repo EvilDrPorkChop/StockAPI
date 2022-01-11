@@ -27,6 +27,7 @@ export class AppComponent {
   public intervals: Interval[] = this.generateIntervals();
   public chosenInterval: Interval = this.intervals[0];
   public chosenPeriod: Period = this.periods[0];
+  public startBalance: number = 1000;
 
   public currentScale: string = "minute";
 
@@ -296,7 +297,7 @@ export class AppComponent {
   }
 
   public startRun(){
-    this.store.startRun(this.chosenTicker, this.chosenInterval.key, this.chosenPeriod.key, 200);
+    this.store.startRun(this.chosenTicker, this.chosenInterval.key, this.chosenPeriod.key, this.startBalance);
   }
 
   public generatePeriods(){

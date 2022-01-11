@@ -86,6 +86,10 @@
             <input matInput [(ngModel)]="chosenTicker" style="color: #efefef">
           </mat-form-field>
 
+          <mat-form-field appearance="outline" style="margin: 1em">
+            <mat-label style="color: #efefef">Start Balance</mat-label>
+            <input matInput [(ngModel)]="startBalance" style="color: #efefef">
+          </mat-form-field>
 
           <mat-form-field appearance="outline" style="margin: 1em" [color]="'accent'">
             <mat-label style="color: #efefef">Interval</mat-label>
@@ -130,14 +134,14 @@
         </a>
         <a class="chart-card">
           <canvas #chart baseChart
-                  [data]="shareData"
+                  [data]="volumeData"
                   [type]="'line'"
                   [options]="options()">
           </canvas>
         </a>
         <a class="chart-card">
           <canvas #chart baseChart
-                  [data]="volumeData"
+                  [data]="shareData"
                   [type]="'line'"
                   [options]="options()">
           </canvas>

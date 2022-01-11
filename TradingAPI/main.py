@@ -3,6 +3,7 @@ from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
 import pandas as pd
 
+import TraderSD
 from StockEnv import StockEnv
 import Trader
 import LongInvestor
@@ -45,8 +46,8 @@ class StartRun(Resource):
 
     args = parser.parse_args()
 
-    trad = Trader.Trader(args['ticker'], 1000, args['period'], args['interval'])
-    long = LongInvestor.Trader(args['ticker'], 1000, args['period'], args['interval'])
+    trad = TraderSD.Trader(args['ticker'], args['startBalance'], args['period'], args['interval'])
+    long = LongInvestor.Trader(args['ticker'], args['startBalance'], args['period'], args['interval'])
     trad.Run()
     long.Run()
 
