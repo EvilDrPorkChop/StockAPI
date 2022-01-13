@@ -1,172 +1,24 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced. * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
-<style>
-  :host {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    font-size: 14px;
-    color: #333;
-    box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    background-color: #262626;
-  }
-
-  .content {
-    display: flex;
-    padding: 0 16px;
-
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .card-container-large {
-    display: flex;
-    border-color: #cecccc;
-    border-style: solid;
-    border-width: 2px;
-    border-radius: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 1em;
-  }
-
-  .card-container {
-    display: flex;
-    background-color: #adadad;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .card {
-    all: unset;
-    height: 40px;
-    color: #efefef;
-    width: 200px;
-    padding: 16px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.2s ease-in-out;
-    line-height: 24px;
-  }
-
-  .chart-card {
-    all: unset;
-    border-radius: 4px;
-    border: 1px solid #adadad;
-    background-color: #efefef;
-    height: 300px;
-    width: 800px;
-    margin: 0 8px 16px;
-    padding: 16px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.2s ease-in-out;
-    line-height: 24px;
-  }
-</style>
 
 <div class="content" role="main">
-  <div *ngIf="mode == 'Train'">
-    <div class="card-container-large">
-      <div class="card-container">
-        <div class="card" style="width: 100%; margin-top: 2em">
-          <mat-form-field appearance="outline" style="margin: 1em">
-            <mat-label style="color: #efefef">ticker</mat-label>
-            <input matInput [(ngModel)]="chosenTicker" style="color: #efefef">
-          </mat-form-field>
 
-          <mat-form-field appearance="outline" style="margin: 1em">
-            <mat-label style="color: #efefef">Start Balance</mat-label>
-            <input matInput [(ngModel)]="startBalance" style="color: #efefef">
-          </mat-form-field>
 
-          <mat-form-field appearance="outline" style="margin: 1em" [color]="'accent'">
-            <mat-label style="color: #efefef">Interval</mat-label>
-            <mat-select [(value)]="chosenInterval" style="color: #59b6e7">
-              <mat-option *ngFor="let interval of intervals" [value]="interval">
-                {{interval.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+    <mat-expansion-panel style="background-color: #a6a6a6">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Ticker View
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-ticker-data></app-ticker-data>
+    </mat-expansion-panel>
 
-          <mat-form-field appearance="outline" style="margin: 1em">
-            <mat-label style="color: #efefef">Period</mat-label>
-            <mat-select [(value)]="chosenPeriod">
-              <mat-option *ngFor="let period of periods" [value]="period">
-                {{period.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+    <mat-expansion-panel style="background-color: #a6a6a6">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Trader View
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-trader-data></app-trader-data>
+    </mat-expansion-panel>
 
-          <button mat-button style="background-color: #64aef8;" (click)="startRun()">Select</button>
-        </div>
-        <a class="chart-card">
-          <canvas #chart baseChart
-                  [data]="tickerData"
-                  [type]="'line'"
-                  [options]="options()">
-          </canvas>
-        </a>
-        <a class="chart-card">
-          <canvas #chart baseChart
-                  [data]="valueData"
-                  [type]="'line'"
-                  [options]="options()">
-          </canvas>
-        </a>
-        <a class="chart-card">
-          <canvas #chart baseChart
-                  [data]="macData"
-                  [type]="'line'"
-                  [options]="options()">
-          </canvas>
-        </a>
-        <a class="chart-card">
-          <canvas #chart baseChart
-                  [data]="volumeData"
-                  [type]="'line'"
-                  [options]="options()">
-          </canvas>
-        </a>
-        <a class="chart-card">
-          <canvas #chart baseChart
-                  [data]="shareData"
-                  [type]="'line'"
-                  [options]="options()">
-          </canvas>
-        </a>
-        <a class="chart-card">
-          <canvas #chart baseChart
-                  [data]="volumeData"
-                  [type]="'line'"
-                  [options]="options()">
-          </canvas>
-        </a>
-        <a class="card" style="width: auto">
-          <mat-label style="margin: 1em">TimeScale</mat-label>
-          <mat-button-toggle-group [(value)]="currentScale" name="favoriteColor" aria-label="Favorite Color">
-            <mat-button-toggle value="minute">Minute</mat-button-toggle>
-            <mat-button-toggle value="hour">Hour</mat-button-toggle>
-            <mat-button-toggle value="day">Day</mat-button-toggle>
-            <mat-button-toggle value="week">Week</mat-button-toggle>
-            <mat-button-toggle value="month">Month</mat-button-toggle>
-          </mat-button-toggle-group>
-        </a>
-      </div>
-      <a class="card" style="width: auto">
-        <a class="card"><button mat-button (click)="startRun()">Start Run</button></a>
-      </a>
-    </div>
-  </div>
+
 </div>

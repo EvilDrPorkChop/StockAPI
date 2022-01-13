@@ -1,0 +1,66 @@
+<div class="card-container-large">
+  <div class="card-container">
+    <div class="card" style="width: 100%; margin-top: 1em">
+      <mat-form-field appearance="outline" style="margin: 1em">
+        <mat-label style="color: #efefef">ticker</mat-label>
+        <input matInput [(ngModel)]="chosenTicker" style="color: #efefef">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="margin: 1em">
+        <mat-label style="color: #efefef">Start Balance</mat-label>
+        <input matInput [(ngModel)]="startBalance" style="color: #efefef">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="margin: 1em" [color]="'accent'">
+        <mat-label style="color: #efefef">Interval</mat-label>
+        <mat-select [(value)]="chosenInterval" style="color: #59b6e7">
+          <mat-option *ngFor="let interval of intervals" [value]="interval">
+            {{interval.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="margin: 1em">
+        <mat-label style="color: #efefef">Period</mat-label>
+        <mat-select [(value)]="chosenPeriod">
+          <mat-option *ngFor="let period of periods" [value]="period">
+            {{period.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-button style="background-color: #64aef8;" (click)="startRun()">Select</button>
+    </div>
+    <a class="chart-card">
+      <canvas #chart baseChart
+              [data]="valueData"
+              [type]="'line'"
+              [options]="options()">
+      </canvas>
+    </a>
+    <a class="chart-card">
+      <canvas #chart baseChart
+              [data]="macData"
+              [type]="'line'"
+              [options]="options()">
+      </canvas>
+    </a>
+    <a class="chart-card">
+      <canvas #chart baseChart
+              [data]="shareData"
+              [type]="'line'"
+              [options]="options()">
+      </canvas>
+    </a>
+    <a class="card" style="width: auto">
+      <mat-label style="margin: 1em">TimeScale</mat-label>
+      <mat-button-toggle-group [(value)]="currentScale" name="favoriteColor" aria-label="Favorite Color">
+        <mat-button-toggle value="minute">Minute</mat-button-toggle>
+        <mat-button-toggle value="hour">Hour</mat-button-toggle>
+        <mat-button-toggle value="day">Day</mat-button-toggle>
+        <mat-button-toggle value="week">Week</mat-button-toggle>
+        <mat-button-toggle value="month">Month</mat-button-toggle>
+      </mat-button-toggle-group>
+    </a>
+  </div>
+</div>

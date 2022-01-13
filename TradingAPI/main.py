@@ -27,7 +27,7 @@ class Ticker(Resource):
 
     print(his)
     response = jsonify(opens=his['Open'].tolist(), highs=his['High'].tolist(),
-                       dates=his.reset_index().iloc[:, 0].tolist(), ticker=args['ticker'])
+                       dates=his.reset_index().iloc[:, 0].tolist(), volumes=his['Volume'].tolist(), ticker=args['ticker'])
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response  # return data and 200 OK code
 
@@ -64,8 +64,17 @@ class StartRun(Resource):
     return response
 
 
+class CheckForDailyPatterns(Resource):
+
+  def get(self):
+    parser = reqparse.RequestParser()
+
+    parser.add_argument('ticker', required=True)
+
+
 api.add_resource(Ticker, '/ticker')
 api.add_resource(StartRun, '/startRun')
+api.add_resource(CheckForDailyPatterns, '/checkForDailyPatterns')
 
 if __name__ == '__main__':
   app.run(host='localhost', port=701)  # run our Flask app

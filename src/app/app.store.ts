@@ -20,6 +20,7 @@ export class AppStore {
       response.highs = data.highs;
       response.dates = data.dates;
       response.ticker = data.ticker;
+      response.volumes = data.volumes;
       this.tickerDataObserver.next(response)
     })
   }
@@ -41,6 +42,7 @@ export class AppStore {
 export class TickerData{
   public opens: number[] = [];
   public highs: string[] = [];
+  public volumes: number[] = [];
   public dates: any[] = [];
   public ticker: string = "";
 }
