@@ -24,7 +24,7 @@
         </mat-select>
       </mat-form-field>
 
-      <button mat-button  (click)="getTickerData()">Select</button>
+      <button mat-button style="background-color: #2d4250; margin-bottom: 15px; margin-left: 20px" (click)="getTickerData()">Select</button>
     </div>
     <a class="chart-card">
       <canvas #chart baseChart
@@ -40,7 +40,7 @@
               [options]="options()">
       </canvas>
     </a>
-    <a class="card" style="width: auto">
+    <a class="card" style="width: 100%">
       <mat-label style="margin: 1em">TimeScale</mat-label>
       <mat-button-toggle-group [(value)]="currentScale" name="favoriteColor" aria-label="Favorite Color">
         <mat-button-toggle value="minute">Minute</mat-button-toggle>
