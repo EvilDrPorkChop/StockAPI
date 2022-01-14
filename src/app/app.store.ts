@@ -9,9 +9,10 @@ import {Tick} from "chart.js";
 export class AppStore {
   public tickerDataObserver: BehaviorSubject<TickerData> = new BehaviorSubject<TickerData>(new TickerData());
   public stateDataObserver: BehaviorSubject<StateData> = new BehaviorSubject<StateData>(new StateData());
+  public patternDataObserver: BehaviorSubject<PatternData> = new BehaviorSubject<PatternData>(new PatternData());
 
 
-  public getData(ticker:string, interval:string, period: string){
+  public getTickerData(ticker:string, interval:string, period: string){
     let url = "http://localhost:701/ticker?ticker="+ticker+"&interval="+interval+"&period="+period;
     this.http.get<any>(url).subscribe((data) => {
       console.log(data);
@@ -29,8 +30,15 @@ export class AppStore {
     let url = "http://localhost:701/startRun?ticker="+ticker+"&interval="+interval+"&period="+period+"&startBalance="+startBalance;
     this.http.get<any>(url).subscribe((data) => {
       console.log(data);
-      let response = new StateData();
       this.stateDataObserver.next(data);
+    })
+  }
+
+  public getPatternData(ticker:string, interval:string, period: string){
+    let url = "http://localhost:701/checkForDailyPatterns?ticker="+ticker+"&interval="+interval+"&period="+period;
+    this.http.get<any>(url).subscribe((data) => {
+      console.log(data);
+      this.patternDataObserver.next(data);
     })
   }
 
@@ -64,4 +72,10 @@ export class State{
   public Balance: number = 0;
   public Value: number = 0;
   public Volume: number = 0;
+}
+
+export class PatternData{
+  public hourPattern: number[] = []
+  public dayPattern: number[] = []
+  public hours: number[] = []
 }

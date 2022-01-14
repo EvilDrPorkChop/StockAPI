@@ -14,12 +14,14 @@ import {A11yModule} from "@angular/cdk/a11y";
 import { TickerDataComponent } from './ticker-data/ticker-data.component';
 import {MatExpansionModule} from "@angular/material/expansion";
 import { TraderDataComponent } from './trader-data/trader-data.component';
+import { PatternDataComponent } from './pattern-data/pattern-data.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TickerDataComponent,
     TraderDataComponent,
+    PatternDataComponent,
   ],
     imports: [
         MatButtonModule,

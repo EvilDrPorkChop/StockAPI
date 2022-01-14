@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TickerDataComponent } from './ticker-data.component';
+import { PatternDataComponent } from './pattern-data.component';
 
-describe('TickerDataComponent', () => {
-  let component: TickerDataComponent;
-  let fixture: ComponentFixture<TickerDataComponent>;
+describe('PatternDataComponent', () => {
+  let component: PatternDataComponent;
+  let fixture: ComponentFixture<PatternDataComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TickerDataComponent ]
+      declarations: [ PatternDataComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TickerDataComponent);
+    fixture = TestBed.createComponent(PatternDataComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

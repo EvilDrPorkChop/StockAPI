@@ -1,19 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import {filter, Subscription} from "rxjs";
 import {Data, DataSet} from "../chart.model";
-import {AppStore, StateData, TickerData} from "../app.store";
+import {AppStore, PatternData, TickerData} from "../app.store";
 import {ChartOptions} from "chart.js";
 
 @Component({
-  selector: 'app-ticker-data',
-  templateUrl: './ticker-data.component.html',
-  styleUrls: ['./ticker-data.component.css']
+  selector: 'app-pattern-data',
+  templateUrl: './pattern-data.component.html',
+  styleUrls: ['./pattern-data.component.css']
 })
-export class TickerDataComponent implements OnInit {
+export class PatternDataComponent implements OnInit {
 
-  public tickerDataSubscription: Subscription = new Subscription();
-  public priceData: Data = new Data();
-  public volumeData: Data = new Data();
+  public patternDataSubscription: Subscription = new Subscription();
+  public patternData: Data = new Data();
   public chosenTicker: string = "aapl";
   public periods: Period[] = this.generatePeriods();
   public intervals: Interval[] = this.generateIntervals();
@@ -26,58 +25,56 @@ export class TickerDataComponent implements OnInit {
 
   ngOnInit(){
     this.generatePeriods();
-    this.tickerDataSubscription = this.store.tickerDataObserver.pipe(filter(r=> r!=null)).subscribe(result => {
+    this.patternDataSubscription = this.store.patternDataObserver.pipe(filter(r=> r!=null)).subscribe(result => {
       if(result){
-        this.proccessTickerData(result)
+        this.proccessPatternData(result)
       }
     });
   }
 
-  public proccessTickerData(result: TickerData){
-    let priceData = new Data();
-    let volumeData = new Data();
-    let openArray = [];
-    let volumeArray = [];
-    let openDataset = new DataSet();
-    let volumeDataset = new DataSet();
+  public proccessPatternData(result: PatternData){
+    let patternData = new Data();
+    let hourlyArray = [];
+    let dailyArray = [];
+    let hourlyDataset = new DataSet();
+    let dailyDataset = new DataSet();
 
-    for(let i = 0; i <  result.opens.length; i++){
-      openArray.push({
-        x: result.dates[i],
-        y: result.opens[i],
-        ticker: result.ticker
+    for(let i = 0; i <  result.hourPattern.length; i++){
+      hourlyArray.push({
+        x: result.hours[i],
+        y: result.hourPattern[i],
+        Time: i
       });
-      openDataset.pointRadius.push(3);
-      openDataset.pointBackgroundColor.push('#106aa2');
+      hourlyDataset.pointRadius.push(3);
+      hourlyDataset.pointBackgroundColor.push('#106aa2');
     }
 
-    console.log(openArray);
-
-    for(let i = 0; i <  result.volumes.length; i++){
-      volumeArray.push({
-        x: result.dates[i],
-        y: result.volumes[i],
-        ticker: result.ticker
+    for(let i = 0; i <  result.dayPattern.length; i++){
+      dailyArray.push({
+        x: result.hours[i],
+        y: result.dayPattern[i],
+        Time: i
       });
-      volumeDataset.pointRadius.push(3);
-      volumeDataset.pointBackgroundColor.push('#1023a2');
+      dailyDataset.pointRadius.push(3);
+      dailyDataset.pointBackgroundColor.push('#1023a2');
     }
 
-    openDataset.data = openArray;
-    openDataset.label = 'Open';
-    openDataset.borderColor = "#1097a2"
-    openDataset.backgroundColor = "#1097a2"
+    console.log(hourlyArray);
 
-    volumeDataset.data = volumeArray;
-    volumeDataset.label = 'Volume';
-    volumeDataset.borderColor = "#104fa2"
-    volumeDataset.backgroundColor = "#104fa2"
+    hourlyDataset.data = hourlyArray;
+    hourlyDataset.label = 'Hourly';
+    hourlyDataset.borderColor = "#1097a2"
+    hourlyDataset.backgroundColor = "#1097a2"
 
-    priceData.datasets.push(openDataset);
-    volumeData.datasets.push(volumeDataset);
+    dailyDataset.data = dailyArray;
+    dailyDataset.label = 'Daily';
+    dailyDataset.borderColor = "#104fa2"
+    dailyDataset.backgroundColor = "#104fa2"
 
-    this.priceData = priceData;
-    this.volumeData = volumeData;
+    patternData.datasets.push(hourlyDataset);
+    patternData.datasets.push(dailyDataset);
+
+    this.patternData = patternData;
   }
 
   public options(): ChartOptions|any {
@@ -85,10 +82,12 @@ export class TickerDataComponent implements OnInit {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        x:{
-          type: 'time',
-          time: {
-            unit: this.currentScale
+        x: {
+          type: "linear",
+          max: 15,
+          min: 9,
+          ticks: {
+            stepSize: 0.5
           }
         }
       }
@@ -103,8 +102,8 @@ export class TickerDataComponent implements OnInit {
 
   public chartLegend = false;
 
-  public getTickerData(){
-    this.store.getTickerData(this.chosenTicker, this.chosenInterval.key, this.chosenPeriod.key);
+  public getPatternData(){
+    this.store.getPatternData(this.chosenTicker, this.chosenInterval.key, this.chosenPeriod.key);
   }
 
   public generatePeriods(){

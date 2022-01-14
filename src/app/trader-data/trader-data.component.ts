@@ -291,10 +291,6 @@ export class TraderDataComponent implements OnInit {
     this.mode = "Train"
   }
 
-  public getTickerData(){
-    this.store.getData(this.chosenTicker, this.chosenInterval.key, this.chosenPeriod.key);
-  }
-
   public startRun(){
     this.store.startRun(this.chosenTicker, this.chosenInterval.key, this.chosenPeriod.key, this.startBalance);
   }

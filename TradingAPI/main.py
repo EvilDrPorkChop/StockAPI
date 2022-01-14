@@ -4,6 +4,7 @@ from flask_restful import Resource, Api, reqparse
 import pandas as pd
 
 import TraderSD
+from PatternFinder import PatternFinder
 from StockEnv import StockEnv
 import Trader
 import LongInvestor
@@ -24,8 +25,6 @@ class Ticker(Resource):
 
     tick = yf.Ticker(args['ticker'])
     his = tick.history(period=str(args['period']), interval=str(args['interval'])).dropna()
-
-    print(his)
     response = jsonify(opens=his['Open'].tolist(), highs=his['High'].tolist(),
                        dates=his.reset_index().iloc[:, 0].tolist(), volumes=his['Volume'].tolist(), ticker=args['ticker'])
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -70,6 +69,25 @@ class CheckForDailyPatterns(Resource):
     parser = reqparse.RequestParser()
 
     parser.add_argument('ticker', required=True)
+    parser.add_argument('interval', required=True)
+    parser.add_argument('period', required=True)
+
+    args = parser.parse_args()
+
+    pat = PatternFinder(args['ticker'], args['period'], args['interval'])
+
+    hours, hourly = pat.averageOutEachHour()
+    _, day = pat.averageOutDayTrend()
+
+    print(type(hours))
+    print(type(hourly))
+    print(type(day))
+    response = jsonify(dayPattern=day, hourPattern=hourly, hours=hours.tolist())
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
+
+
 
 
 api.add_resource(Ticker, '/ticker')
