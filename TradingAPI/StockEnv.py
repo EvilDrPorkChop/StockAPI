@@ -57,8 +57,10 @@ class StockEnv:
 
     if 'Date' in self.Data:
       self.dateString = 'Date'
-    else:
+    elif 'Datetime' in self.Data:
       self.dateString = 'Datetime'
+    else:
+      self.dateString = 'index'
 
     self.State = State(firstrow[self.dateString], firstrow['Open'], firstrow['Volume'], 0, startBal)
     self.States = []
