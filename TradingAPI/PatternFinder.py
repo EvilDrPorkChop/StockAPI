@@ -3,6 +3,9 @@ import pandas as pd
 from pandas_datareader import data as pdr
 from numpy import datetime64
 
+from TickerDataFetcher import TickerDataFetcher
+
+
 class hourList:
   def __init__(self, h):
     self.hour = h
@@ -70,7 +73,7 @@ class PatternFinder:
     self.ticker = ticker
     self.period = period
     self.interval = interval
-    self.data = self.LoadData()
+    self.data = TickerDataFetcher(ticker, interval, period).LoadData()
 
     if 'Date' in self.data:
       self.dateString = 'Date'
@@ -79,18 +82,13 @@ class PatternFinder:
     else:
       self.dateString = 'index'
 
+    print(self.data.dtypes)
+
     self.data['hour'] = self.data[self.dateString].apply(hr_func)
     self.data['day'] = self.data[self.dateString].apply(dy_func)
     self.data['month'] = self.data[self.dateString].apply(mnth_func)
     self.data['year'] = self.data[self.dateString].apply(yr_func)
     self.data = self.data[['Open', 'hour', 'day', 'month', 'year']]
-
-  def LoadData(self):
-    yf.pdr_override()
-    tick = yf.Ticker(self.ticker)
-    data = tick.history(period=self.period, interval=self.interval).dropna()
-    data = data.reset_index()
-    return data
 
   def hourAverages(self):
     years = self.data['year'].unique().tolist()

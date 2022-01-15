@@ -9,6 +9,8 @@ import yfinance as yf
 from pandas_datareader import data as pdr
 import copy
 
+from TickerDataFetcher import TickerDataFetcher
+
 
 class Share:
   def __init__(self, price):
@@ -51,7 +53,7 @@ class StockEnv:
     self.Finished = False
     self.TimeStep = 0
     self.Shares = []
-    data = self.LoadData()
+    data = TickerDataFetcher(ticker, interval, period).LoadData()
     self.Data = data
     firstrow = self.Data.iloc[0]
 
@@ -66,7 +68,6 @@ class StockEnv:
     self.States = []
 
   def LoadData(self):
-    yf.pdr_override()
     ftse = yf.Ticker(self.ticker)
     data = ftse.history(period=self.period, interval=self.interval).dropna()
     data = data.reset_index()

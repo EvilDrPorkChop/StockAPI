@@ -39,6 +39,17 @@ export class PatternDataComponent implements OnInit {
     let hourlyDataset = new DataSet();
     let dailyDataset = new DataSet();
 
+    console.log(result.hours[result.hours.length-1]);
+    console.log(result.hours[result.hours.length-1]);
+    if(result.hours[result.hours.length-1] < result.hours[result.hours.length-2]){
+      let hour: number = result.hours.pop() as number;
+      let dayP: number = result.dayPattern.pop() as number;
+      let hourP: number = result.hourPattern.pop() as number;
+      result.hours.unshift(hour);
+      result.hourPattern.unshift(hourP);
+      result.dayPattern.unshift(dayP);
+    }
+
     for(let i = 0; i <  result.hourPattern.length; i++){
       hourlyArray.push({
         x: result.hours[i],
@@ -84,8 +95,6 @@ export class PatternDataComponent implements OnInit {
       scales: {
         x: {
           type: "linear",
-          max: 15,
-          min: 9,
           ticks: {
             stepSize: 0.5
           }

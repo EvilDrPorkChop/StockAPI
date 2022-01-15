@@ -3,7 +3,9 @@ from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
 import pandas as pd
 
+import TimedTrader
 import TraderSD
+import TickerDataFetcher
 from PatternFinder import PatternFinder
 from StockEnv import StockEnv
 import Trader
@@ -23,10 +25,18 @@ class Ticker(Resource):
 
     args = parser.parse_args()
 
-    tick = yf.Ticker(args['ticker'])
-    his = tick.history(period=str(args['period']), interval=str(args['interval'])).dropna()
-    response = jsonify(opens=his['Open'].tolist(), highs=his['High'].tolist(),
-                       dates=his.reset_index().iloc[:, 0].tolist(), volumes=his['Volume'].tolist(), ticker=args['ticker'])
+    td = TickerDataFetcher.TickerDataFetcher(ticker=str(args['ticker']), period=str(args['period']), interval=str(args['interval']))
+    data = td.LoadData()
+
+    if 'Date' in data:
+      dateString = 'Date'
+    elif 'Datetime' in data:
+      dateString = 'Datetime'
+    else:
+      dateString = 'index'
+
+    response = jsonify(opens=data['Open'].tolist(), highs=data['High'].tolist(),
+                       dates=data[dateString].tolist(), volumes=data['Volume'].tolist(), ticker=args['ticker'])
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response  # return data and 200 OK code
 
@@ -45,7 +55,7 @@ class StartRun(Resource):
 
     args = parser.parse_args()
 
-    trad = TraderSD.Trader(args['ticker'], args['startBalance'], args['period'], args['interval'])
+    trad = TimedTrader.Trader(args['ticker'], args['startBalance'], args['period'], args['interval'], 15, 16)
     long = LongInvestor.Trader(args['ticker'], args['startBalance'], args['period'], args['interval'])
     trad.Run()
     long.Run()
