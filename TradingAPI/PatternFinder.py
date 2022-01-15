@@ -3,6 +3,60 @@ import pandas as pd
 from pandas_datareader import data as pdr
 from numpy import datetime64
 
+class hourList:
+  def __init__(self, h):
+    self.hour = h
+    self.percentAv = 0
+
+class hour:
+
+  def __init__(self, df, h):
+    self.value = df['Open'].values[0]
+    self.hour = h
+    self.percent = 100
+
+  def setPercent(self, perc):
+    self.percent = perc
+
+
+class day:
+
+  def __init__(self, df):
+    self.df = df
+
+  def getHour(self, h):
+    df = self.df.loc[self.df['hour'] == h]
+    return hour(df, h)
+
+
+class month:
+
+  def __init__(self, df):
+    self.df = df
+
+  def getDay(self, d):
+    df = self.df.loc[self.df['day'] == d]
+    return day(df)
+
+
+class year:
+
+  def __init__(self, df):
+    self.df = df
+
+  def getMonth(self, m):
+    df = self.df.loc[self.df['month'] == m]
+    return month(df)
+
+
+def yr_func(ts):
+  return ts.year
+
+def mnth_func(ts):
+  return ts.month
+
+def dy_func(ts):
+  return ts.day
 
 def hr_func(ts):
   return ts.hour
@@ -25,7 +79,11 @@ class PatternFinder:
     else:
       self.dateString = 'index'
 
-    self.data['time'] = self.data[self.dateString].apply(hr_func)
+    self.data['hour'] = self.data[self.dateString].apply(hr_func)
+    self.data['day'] = self.data[self.dateString].apply(dy_func)
+    self.data['month'] = self.data[self.dateString].apply(mnth_func)
+    self.data['year'] = self.data[self.dateString].apply(yr_func)
+    self.data = self.data[['Open', 'hour', 'day', 'month', 'year']]
 
   def LoadData(self):
     yf.pdr_override()
@@ -34,69 +92,92 @@ class PatternFinder:
     data = data.reset_index()
     return data
 
-  def averageOutEachHour(self):
-    hours = self.data['time'].unique()
+  def hourAverages(self):
+    years = self.data['year'].unique().tolist()
+    hourObjs = []
+    for y in years:
+      yearObj = year(self.data.loc[self.data['year'] == y])
+      months = yearObj.df['month'].unique().tolist()
+      for m in months:
+        monthObj = yearObj.getMonth(m)
+        days = monthObj.df['day'].unique().tolist()
+        for d in days:
+          dayObj = monthObj.getDay(d)
+          hours = dayObj.df['hour'].unique().tolist()
+          if len(hours) > 1:
+            for hour in hours:
+              h = dayObj.getHour(hour)
+              if hour == hours[0]:
+                h.setPercent(100)
+              else:
+                h.setPercent(getPercent(dayObj.getHour(lasthour).value, dayObj.getHour(hour).value))
+              lasthour = hour
+              hourObjs.append(h)
 
-    df = self.data.loc[self.data['time'] == hours[0]]
-    days = len(df.index)
-
-    hourFrames = []
-
+    hours = self.data['hour'].unique().tolist()
+    hourLists = []
     for hour in hours:
-      hourFrames.append(self.data.loc[self.data['time'] == hour])
+      hList = hourList(hour)
+      hourTotal = 0
+      num = 0
 
-    hourPercents = []
-    for index in range(len(hourFrames)):
-      dayPercents = []
-      for day in range(days):
-        if index == 0:
-          dayPercents.append(100)
-        else:
-          thisHourPrice = hourFrames[index].iloc[day]['Open']
-          lastHourPrice = hourFrames[index - 1].iloc[day]['Open']
-          dayPercents.append(getPercent(lastHourPrice, thisHourPrice))
-      hourPercents.append(dayPercents)
+      for obj in hourObjs:
+        if obj.hour == hour:
+          hourTotal += obj.percent
+          num += 1
 
+      hList.percentAv = float(hourTotal/num)
+      hourLists.append(hList)
 
+    hours = []
     averages = []
-    for hour in hourPercents:
-      total = 0
-      for day in hour:
-        total += day
-      av = total / len(hour)
-      averages.append(av)
+    for hL in hourLists:
+      hours.append(hL.hour)
+      averages.append(hL.percentAv)
 
     return hours, averages
 
-  def averageOutDayTrend(self):
-    hours = self.data['time'].unique()
+  def dayAverages(self):
+    years = self.data['year'].unique().tolist()
+    hourObjs = []
+    for y in years:
+      yearObj = year(self.data.loc[self.data['year'] == y])
+      months = yearObj.df['month'].unique().tolist()
+      for m in months:
+        monthObj = yearObj.getMonth(m)
+        days = monthObj.df['day'].unique().tolist()
+        for d in days:
+          dayObj = monthObj.getDay(d)
+          hours = dayObj.df['hour'].unique().tolist()
+          if len(hours) > 1:
+            for hour in hours:
+              h = dayObj.getHour(hour)
+              if hour == hours[0]:
+                firstHour = hour
+                h.setPercent(100)
+              else:
+                h.setPercent(getPercent(dayObj.getHour(firstHour).value, dayObj.getHour(hour).value))
+              hourObjs.append(h)
 
-    df = self.data.loc[self.data['time'] == hours[0]]
-    days = len(df.index)
-
-    hourFrames = []
-
+    hours = self.data['hour'].unique().tolist()
+    hourLists = []
     for hour in hours:
-      hourFrames.append(self.data.loc[self.data['time'] == hour])
+      hList = hourList(hour)
+      hourTotal = 0
+      num = 0
 
-    hourPercents = []
-    for index in range(len(hourFrames)):
-      dayPercents = []
-      for day in range(days):
-        if index == 0:
-          dayPercents.append(100)
-        else:
-          thisHourPrice = hourFrames[index].iloc[day]['Open']
-          dayPercents.append(getPercent(hourFrames[0].iloc[day]['Open'], thisHourPrice))
-      hourPercents.append(dayPercents)
+      for obj in hourObjs:
+        if obj.hour == hour:
+          hourTotal += obj.percent
+          num += 1
 
+      hList.percentAv = float(hourTotal/num)
+      hourLists.append(hList)
 
+    hours = []
     averages = []
-    for hour in hourPercents:
-      total = 0
-      for day in hour:
-        total += day
-      av = total / len(hour)
-      averages.append(av)
+    for hL in hourLists:
+      hours.append(hL.hour)
+      averages.append(hL.percentAv)
 
     return hours, averages

@@ -76,13 +76,10 @@ class CheckForDailyPatterns(Resource):
 
     pat = PatternFinder(args['ticker'], args['period'], args['interval'])
 
-    hours, hourly = pat.averageOutEachHour()
-    _, day = pat.averageOutDayTrend()
+    hours, hourly = pat.hourAverages()
+    _, day = pat.dayAverages()
 
-    print(type(hours))
-    print(type(hourly))
-    print(type(day))
-    response = jsonify(dayPattern=day, hourPattern=hourly, hours=hours.tolist())
+    response = jsonify(dayPattern=day, hourPattern=hourly, hours=hours)
     response.headers.add("Access-Control-Allow-Origin", "*")
 
     return response
