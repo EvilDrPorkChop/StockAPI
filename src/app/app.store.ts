@@ -82,4 +82,7 @@ export class PatternData{
   public hourPattern: number[] = []
   public dayPattern: number[] = []
   public hours: number[] = []
+  public minmaxs: number[] = []
+  public dates: any[] = []
+  public average: number = 0
 }

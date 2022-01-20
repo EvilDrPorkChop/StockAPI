@@ -27,10 +27,14 @@ class day:
 
   def __init__(self, df):
     self.df = df
+    self.minmax = 100
 
   def getHour(self, h):
     df = self.df.loc[self.df['hour'] == h]
     return hour(df, h)
+
+  def setMinMax(self, minmax):
+    self.minmax = minmax
 
 
 class month:
@@ -87,7 +91,7 @@ class PatternFinder:
     self.data['day'] = self.data[self.dateString].apply(dy_func)
     self.data['month'] = self.data[self.dateString].apply(mnth_func)
     self.data['year'] = self.data[self.dateString].apply(yr_func)
-    self.data = self.data[['open', 'hour', 'day', 'month', 'year']]
+    self.data = self.data[['timestamp', 'open', 'hour', 'day', 'month', 'year']]
 
   def hourAverages(self):
     years = self.data['year'].unique().tolist()
@@ -179,3 +183,44 @@ class PatternFinder:
       averages.append(hL.percentAv)
 
     return hours, averages
+
+
+  def dayAveragesFomOpen(self):
+    years = self.data['year'].unique().tolist()
+    dayObjs = []
+    for y in years:
+      yearObj = year(self.data.loc[self.data['year'] == y])
+      months = yearObj.df['month'].unique().tolist()
+      for m in months:
+        monthObj = yearObj.getMonth(m)
+        days = monthObj.df['day'].unique().tolist()
+        for d in days:
+          dayObj = monthObj.getDay(d)
+          hours = dayObj.df['hour'].unique().tolist()
+          if len(hours) > 1:
+            min = 100
+            max = 100
+            openVal = dayObj.getHour(hours[0])
+            for hour in hours:
+              h = dayObj.getHour(hour)
+              perc = getPercent(openVal.value, h.value)
+              if min > perc:
+                min = perc
+              elif max < perc:
+                max = perc
+            if abs(min-100) > abs(max-100):
+              dayObj.setMinMax(min)
+            else:
+              dayObj.setMinMax(max)
+            dayObjs.append(dayObj)
+    minmaxs = []
+    dates = []
+    total = 0
+    print(dayObjs[0].df['timestamp'].values[0].__str__())
+    for dO in dayObjs:
+      total += dO.minmax
+      minmaxs.append(dO.minmax)
+      dates.append(dO.df['timestamp'].values[0].__str__())
+    average = total/len(dayObjs)
+
+    return minmaxs, dates, average

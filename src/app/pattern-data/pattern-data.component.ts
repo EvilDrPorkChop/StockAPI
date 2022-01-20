@@ -15,12 +15,14 @@ export class PatternDataComponent implements OnInit {
 
   public patternDataSubscription: Subscription = new Subscription();
   public patternData: Data = new Data();
+  public minMaxData: Data = new Data();
   public chosenTicker: string = "aapl";
   public intervalTypes: Interval[] = this.generateIntervalTypes();
   public chosenIntervalType: Interval = this.intervalTypes[1];
   public chosenInterval: number = 1;
   public fromDate: FormControl = new FormControl(moment().subtract(5, 'days').toDate());
   public toDate: FormControl = new FormControl(moment().toDate());
+  public average: number = 0;
 
   constructor(public store:AppStore) {
   }
@@ -35,10 +37,14 @@ export class PatternDataComponent implements OnInit {
 
   public proccessPatternData(result: PatternData){
     let patternData = new Data();
+    let minmaxData = new Data();
     let hourlyArray = [];
     let dailyArray = [];
+    let minMaxArray = [];
     let hourlyDataset = new DataSet();
     let dailyDataset = new DataSet();
+    let minMaxDataset = new DataSet();
+
 
     for(let i = 0; i <  result.hourPattern.length; i++){
       hourlyArray.push({
@@ -62,6 +68,17 @@ export class PatternDataComponent implements OnInit {
     }
     dailyArray.sort((a, b) => (a.x > b.x) ? 1 : -1)
 
+    for(let i = 0; i <  result.minmaxs.length; i++){
+      minMaxArray.push({
+        x: result.dates[i],
+        y: result.minmaxs[i],
+        Time: i
+      });
+      minMaxDataset.pointRadius.push(3);
+      minMaxDataset.pointBackgroundColor.push('#1023a2');
+    }
+    this.average = result.average;
+
     console.log(hourlyArray);
 
     hourlyDataset.data = hourlyArray;
@@ -74,21 +91,45 @@ export class PatternDataComponent implements OnInit {
     dailyDataset.borderColor = "#104fa2"
     dailyDataset.backgroundColor = "#104fa2"
 
+    minMaxDataset.data = minMaxArray;
+    minMaxDataset.label = 'Max %Diff from open';
+    minMaxDataset.borderColor = "#104fa2"
+    minMaxDataset.backgroundColor = "#104fa2"
+
     patternData.datasets.push(hourlyDataset);
     patternData.datasets.push(dailyDataset);
+    minmaxData.datasets.push(minMaxDataset);
 
     this.patternData = patternData;
+    this.minMaxData = minmaxData;
+
   }
 
-  public options(): ChartOptions|any {
-    return{
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          type: "linear",
-          ticks: {
-            stepSize: 0.5
+  public options(isLinear: boolean): ChartOptions|any {
+    if(isLinear) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: "linear",
+            ticks: {
+              stepSize: 0.5
+            }
+          }
+        }
+      }
+    }
+    else{
+      return{
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x:{
+            type: 'time',
+            time: {
+              unit: 'day'
+            }
           }
         }
       }

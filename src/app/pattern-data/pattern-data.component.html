@@ -27,8 +27,18 @@
       <canvas #chart baseChart
               [data]="patternData"
               [type]="'line'"
-              [options]="options()">
+              [options]="options(true)">
       </canvas>
+    </a>
+    <a class="chart-card">
+      <canvas #chart baseChart
+              [data]="minMaxData"
+              [type]="'line'"
+              [options]="options(false)">
+      </canvas>
+    </a>
+    <a class="card" style="width: 80%">
+      <span style="pull-right">{{this.average}}</span>
     </a>
   </div>
 </div>

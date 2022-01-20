@@ -84,8 +84,9 @@ class CheckForDailyPatterns(Resource):
 
     hours, hourly = pat.hourAverages()
     _, day = pat.dayAverages()
+    minmax, dates, average = pat.dayAveragesFomOpen()
 
-    response = jsonify(dayPattern=day, hourPattern=hourly, hours=hours)
+    response = jsonify(dayPattern=day, hourPattern=hourly, hours=hours, minmaxs=minmax, dates=dates, average=average)
     response.headers.add("Access-Control-Allow-Origin", "*")
 
     return response
