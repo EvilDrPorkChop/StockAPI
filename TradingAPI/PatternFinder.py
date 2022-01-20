@@ -14,7 +14,8 @@ class hourList:
 class hour:
 
   def __init__(self, df, h):
-    self.value = df['open'].values[0]
+    if len(df['open'].values) > 0:
+      self.value = df['open'].values[0]
     self.hour = h
     self.percent = 100
 
@@ -106,7 +107,7 @@ class PatternFinder:
               if hour == hours[0]:
                 h.setPercent(100)
               else:
-                h.setPercent(getPercent(dayObj.getHour(lasthour).value, dayObj.getHour(hour).value))
+                h.setPercent(getPercent(dayObj.getHour(lasthour).value, h.value))
               lasthour = hour
               hourObjs.append(h)
 
@@ -146,13 +147,14 @@ class PatternFinder:
           dayObj = monthObj.getDay(d)
           hours = dayObj.df['hour'].unique().tolist()
           if len(hours) > 1:
+            total = 0
             for hour in hours:
               h = dayObj.getHour(hour)
-              if hour == hours[0]:
-                firstHour = hour
-                h.setPercent(100)
-              else:
-                h.setPercent(getPercent(dayObj.getHour(firstHour).value, dayObj.getHour(hour).value))
+              total += h.value
+            average = total/len(hours)
+            for hour in hours:
+              h = dayObj.getHour(hour)
+              h.setPercent(getPercent(average, h.value))
               hourObjs.append(h)
 
     hours = self.data['hour'].unique().tolist()
