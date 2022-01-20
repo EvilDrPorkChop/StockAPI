@@ -2,26 +2,35 @@
   <div class="card-container">
     <div class="card" style="width: 100%; margin-top: 1em">
       <mat-form-field appearance="outline" style="margin: 1em">
-        <mat-label style="color: #efefef">ticker</mat-label>
+        <mat-label style="color: #efefef">Ticker</mat-label>
         <input matInput [(ngModel)]="chosenTicker" style="color: #efefef">
       </mat-form-field>
 
-      <mat-form-field appearance="outline" style="margin: 1em" [color]="'accent'">
+      <mat-form-field appearance="outline">
         <mat-label style="color: #efefef">Interval</mat-label>
-        <mat-select [(value)]="chosenInterval" style="color: #59b6e7">
-          <mat-option *ngFor="let interval of intervals" [value]="interval">
+        <input matInput value="1" type="number" [(ngModel)]="chosenInterval">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="margin: 1em" [color]="'accent'">
+        <mat-select [(value)]="chosenIntervalType" style="color: #59b6e7">
+          <mat-option *ngFor="let interval of intervalTypes" [value]="interval">
             {{interval.name}}
           </mat-option>
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" style="margin: 1em">
-        <mat-label style="color: #efefef">Period</mat-label>
-        <mat-select [(value)]="chosenPeriod">
-          <mat-option *ngFor="let period of periods" [value]="period">
-            {{period.name}}
-          </mat-option>
-        </mat-select>
+      <mat-form-field appearance="outline" style="margin: 1em" [color]="'accent'">
+        <mat-label style="color: #efefef">From Date</mat-label>
+          <input matInput [matDatepicker]="picker" [formControl]="fromDate">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="margin: 1em" [color]="'accent'">
+        <mat-label style="color: #efefef">To Date</mat-label>
+        <input matInput [matDatepicker]="picker2" [formControl]="toDate">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
       </mat-form-field>
 
       <button mat-button style="background-color: #2d4250; margin-bottom: 15px; margin-left: 20px" (click)="getTickerData()">Select</button>

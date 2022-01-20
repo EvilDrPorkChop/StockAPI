@@ -21,22 +21,16 @@ class Ticker(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('ticker', required=True)
     parser.add_argument('interval', required=True)
-    parser.add_argument('period', required=True)
+    parser.add_argument('intervalType', required=True)
+    parser.add_argument('fromDate', required=True)
+    parser.add_argument('toDate', required=True)
 
     args = parser.parse_args()
 
-    td = TickerDataFetcher.TickerDataFetcher(ticker=str(args['ticker']), period=str(args['period']), interval=str(args['interval']))
+    td = TickerDataFetcher.TickerDataFetcher(ticker=str(args['ticker']), interval=int(args['interval']), intervalType=str(args['intervalType']), fromDate=str(args['fromDate']), toDate=str(args['toDate']))
     data = td.LoadData()
 
-    if 'Date' in data:
-      dateString = 'Date'
-    elif 'Datetime' in data:
-      dateString = 'Datetime'
-    else:
-      dateString = 'index'
-
-    response = jsonify(opens=data['Open'].tolist(), highs=data['High'].tolist(),
-                       dates=data[dateString].tolist(), volumes=data['Volume'].tolist(), ticker=args['ticker'])
+    response = jsonify(dates=data.reset_index().iloc[:, 0].tolist(), opens=data['open'].tolist(), volumes=data['volume'].tolist())
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response  # return data and 200 OK code
 
@@ -50,7 +44,9 @@ class StartRun(Resource):
 
     parser.add_argument('ticker', required=True)
     parser.add_argument('interval', required=True)
-    parser.add_argument('period', required=True)
+    parser.add_argument('intervalType', required=True)
+    parser.add_argument('fromDate', required=True)
+    parser.add_argument('toDate', required=True)
     parser.add_argument('startBalance', required=True)
 
     args = parser.parse_args()
@@ -79,12 +75,12 @@ class CheckForDailyPatterns(Resource):
     parser = reqparse.RequestParser()
 
     parser.add_argument('ticker', required=True)
-    parser.add_argument('interval', required=True)
-    parser.add_argument('period', required=True)
+    parser.add_argument('fromDate', required=True)
+    parser.add_argument('toDate', required=True)
 
     args = parser.parse_args()
 
-    pat = PatternFinder(args['ticker'], args['period'], args['interval'])
+    pat = PatternFinder(args['ticker'], args['fromDate'], args['toDate'])
 
     hours, hourly = pat.hourAverages()
     _, day = pat.dayAverages()

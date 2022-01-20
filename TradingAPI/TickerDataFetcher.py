@@ -1,29 +1,28 @@
-import yfinance as yf
 import pandas as pd
-from pandas_datareader import data as pdr
-from numpy import datetime64
-
-
+from alpaca_trade_api.common import URL
+from alpaca_trade_api.rest import REST, TimeFrame, TimeFrameUnit
+import config
 class TickerDataFetcher:
 
-  def __init__(self, ticker, interval, period):
+  def __init__(self, ticker, interval, intervalType, fromDate, toDate):
     self.ticker = ticker
     self.interval = interval
-    self.period = period
+    self.intervalType = intervalType
+    self.fromDate = fromDate
+    self.toDate = toDate
 
   def LoadData(self):
-    yf.pdr_override()
-    ftse = yf.Ticker(self.ticker)
-    data = ftse.history(period=self.period, interval=self.interval).dropna()
-    data = data.tz_convert(None)
-    data = data.reset_index()
-
-    if 'Date' in data:
-      dateString = 'Date'
-    elif 'Datetime' in data:
-      dateString = 'Datetime'
+    if self.intervalType == "day":
+      tf = TimeFrameUnit.Day
+    elif self.intervalType == "minute":
+      tf = TimeFrameUnit.Minute
     else:
-      dateString = 'index'
+      tf = TimeFrameUnit.Hour
+
+    print(self.fromDate)
+    # Instantiate REST API Connection
+    api = REST(key_id=config.ALPACA_API_KEY, secret_key=config.ALPACA_SECRET_KEY, base_url=config.BASE_URL, api_version='v2')
+    data = api.get_bars(symbol=self.ticker, timeframe=TimeFrame(self.interval, tf), start=self.fromDate, end=self.toDate, adjustment='raw').df
 
     print(data)
     print(data.dtypes)

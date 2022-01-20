@@ -14,7 +14,7 @@ class hourList:
 class hour:
 
   def __init__(self, df, h):
-    self.value = df['Open'].values[0]
+    self.value = df['open'].values[0]
     self.hour = h
     self.percent = 100
 
@@ -69,18 +69,16 @@ def getPercent(before, this):
 
 class PatternFinder:
 
-  def __init__(self, ticker, period, interval):
+  def __init__(self, ticker, fromDate, toDate):
     self.ticker = ticker
-    self.period = period
-    self.interval = interval
-    self.data = TickerDataFetcher(ticker, interval, period).LoadData()
-
+    self.data = TickerDataFetcher(ticker, 1, 'hour', fromDate, toDate).LoadData()
+    self.data = self.data.reset_index()
     if 'Date' in self.data:
       self.dateString = 'Date'
     elif 'Datetime' in self.data:
       self.dateString = 'Datetime'
     else:
-      self.dateString = 'index'
+      self.dateString = 'timestamp'
 
     print(self.data.dtypes)
 
@@ -88,7 +86,7 @@ class PatternFinder:
     self.data['day'] = self.data[self.dateString].apply(dy_func)
     self.data['month'] = self.data[self.dateString].apply(mnth_func)
     self.data['year'] = self.data[self.dateString].apply(yr_func)
-    self.data = self.data[['Open', 'hour', 'day', 'month', 'year']]
+    self.data = self.data[['open', 'hour', 'day', 'month', 'year']]
 
   def hourAverages(self):
     years = self.data['year'].unique().tolist()

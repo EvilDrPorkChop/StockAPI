@@ -3,6 +3,8 @@ import {filter, Subscription} from "rxjs";
 import {Data, DataSet} from "../chart.model";
 import {AppStore, StateData, TickerData} from "../app.store";
 import {ChartOptions} from "chart.js";
+import {FormControl} from "@angular/forms";
+import * as moment from "moment";
 
 @Component({
   selector: 'app-trader-data',
@@ -22,11 +24,12 @@ export class TraderDataComponent implements OnInit {
   public shareData: Data = new Data();
   public macData: Data = new Data();
   public chosenTicker: string = "aapl";
-  public periods: Period[] = this.generatePeriods();
-  public intervals: Interval[] = this.generateIntervals();
-  public chosenInterval: Interval = this.intervals[0];
-  public chosenPeriod: Period = this.periods[0];
+  public intervalTypes: Interval[] = this.generateIntervals();
+  public chosenIntervalType: Interval = this.intervalTypes[1];
+  public chosenInterval: number = 1;
   public startBalance: number = 1000;
+  public fromDate: FormControl = new FormControl(moment().subtract(5, 'days').toDate());
+  public toDate: FormControl = new FormControl(moment().toDate());
 
   public currentScale: string = "minute";
 
@@ -34,39 +37,12 @@ export class TraderDataComponent implements OnInit {
   }
 
   ngOnInit(){
-    this.generatePeriods();
-    this.tickerDataSubscription = this.store.tickerDataObserver.pipe(filter(r=> r!=null)).subscribe(result => {
-      if(result){
-        this.proccessTickerData(result)
-      }
-    });
     this.stateDataSubscription = this.store.stateDataObserver.pipe(filter(r=> r!=null)).subscribe(result => {
       if(result){
         this.proccessStateData(result)
       }
     })
-  }
-
-  public proccessTickerData(result: TickerData){
-    let newData = new Data();
-    let openArray = [];
-    let openDataset = new DataSet();
-
-    for(let i = 0; i <  result.opens.length; i++){
-      openArray.push({
-        x: result.dates[i],
-        y: result.opens[i],
-        ticker: result.ticker
-      });
-      openDataset.pointBackgroundColor.push();
-    }
-    openDataset.data = openArray;
-    openDataset.label = 'Open';
-    openDataset.borderColor = "#02ffff"
-    openDataset.backgroundColor = "#02ffff"
-    newData.datasets.push(openDataset);
-
-    this.tickerData = newData;
+    this.fromDate.setValue(moment().subtract(5, 'days').toDate());
   }
 
   public proccessStateData(result: StateData){
@@ -292,33 +268,16 @@ export class TraderDataComponent implements OnInit {
   }
 
   public startRun(){
-    this.store.startRun(this.chosenTicker, this.chosenInterval.key, this.chosenPeriod.key, this.startBalance);
-  }
-
-  public generatePeriods(){
-    let periods = [
-      new Period("1h", "1 Hour"),
-      new Period("1d", "1 Day"),
-      new Period("5d", "5 Days"),
-      new Period("1mo", "1 Month"),
-      new Period("3mo", "3 Months"),
-      new Period("6mo", "6 Months"),
-      new Period("1y", "1 Year")
-    ]
-    return periods;
+    let fromDate = (moment(this.fromDate.value)).format('YYYY-MM-DD');
+    let toDate = (moment(this.toDate.value)).format('YYYY-MM-DD');
+    this.store.startRun(this.chosenTicker, this.chosenIntervalType.key, this.chosenInterval, fromDate, toDate, this.startBalance);
   }
 
   public generateIntervals() {
     let intervals = [
-      new Interval("1m", "1 Minute"),
-      new Interval("2m", "2 Minutes"),
-      new Interval("5m", "5 Minutes"),
-      new Interval("30m", "30 Minutes"),
-      new Interval("1h", "1 Hour"),
-      new Interval("1d", "1 day"),
-      new Interval("5d", "5 days"),
-      new Interval("1w", "1 week"),
-      new Interval("1mo", "1 month")
+      new Interval("minute", "Minute"),
+      new Interval("hour", "Hour"),
+      new Interval("day", "Day")
     ]
     return intervals;
   }

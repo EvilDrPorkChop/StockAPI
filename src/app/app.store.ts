@@ -12,30 +12,34 @@ export class AppStore {
   public patternDataObserver: BehaviorSubject<PatternData> = new BehaviorSubject<PatternData>(new PatternData());
 
 
-  public getTickerData(ticker:string, interval:string, period: string){
-    let url = "http://localhost:701/ticker?ticker="+ticker+"&interval="+interval+"&period="+period;
+  public getTickerData(ticker:string, intervalType:string, interval:number, fromDate: string, toDate: string){
+    let url = "http://localhost:701/ticker?ticker="+ticker+"&interval="+interval+"&intervalType="
+      +intervalType+"&fromDate="+fromDate+"&toDate="+toDate;
+
     this.http.get<any>(url).subscribe((data) => {
       console.log(data);
       let response = new TickerData();
       response.opens = data.opens;
-      response.highs = data.highs;
+      //response.highs = data.highs;
       response.dates = data.dates;
-      response.ticker = data.ticker;
+      //response.ticker = data.ticker;
       response.volumes = data.volumes;
       this.tickerDataObserver.next(response)
     })
   }
 
-  public startRun(ticker:string, interval:string, period: string, startBalance: number){
-    let url = "http://localhost:701/startRun?ticker="+ticker+"&interval="+interval+"&period="+period+"&startBalance="+startBalance;
+  public startRun(ticker:string, intervalType:string, interval:number, fromDate: string, toDate: string, startBalance: number){
+    let url = "http://localhost:701/startRun?ticker="+ticker+"&interval="+interval+"&intervalType="
+      +intervalType+"&fromDate="+fromDate+"&toDate="+toDate+"&startBalance="+startBalance;
+
     this.http.get<any>(url).subscribe((data) => {
       console.log(data);
       this.stateDataObserver.next(data);
     })
   }
 
-  public getPatternData(ticker:string, interval:string, period: string){
-    let url = "http://localhost:701/checkForDailyPatterns?ticker="+ticker+"&interval="+interval+"&period="+period;
+  public getPatternData(ticker:string, fromDate: string, toDate: string){
+    let url = "http://localhost:701/checkForDailyPatterns?ticker="+ticker+"&fromDate="+fromDate+"&toDate="+toDate+"&startBalance=";
     this.http.get<any>(url).subscribe((data) => {
       console.log(data);
       this.patternDataObserver.next(data);

@@ -3,6 +3,8 @@ import {filter, Subscription} from "rxjs";
 import {Data, DataSet} from "../chart.model";
 import {AppStore, StateData, TickerData} from "../app.store";
 import {ChartOptions} from "chart.js";
+import {FormControl} from "@angular/forms";
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-ticker-data',
@@ -15,17 +17,17 @@ export class TickerDataComponent implements OnInit {
   public priceData: Data = new Data();
   public volumeData: Data = new Data();
   public chosenTicker: string = "aapl";
-  public periods: Period[] = this.generatePeriods();
-  public intervals: Interval[] = this.generateIntervals();
-  public chosenInterval: Interval = this.intervals[0];
-  public chosenPeriod: Period = this.periods[0];
+  public intervalTypes: Interval[] = this.generateIntervalTypes();
+  public chosenIntervalType: Interval = this.intervalTypes[1];
+  public chosenInterval: number = 1;
   public currentScale: string = "minute";
+  public fromDate: FormControl = new FormControl(moment().subtract(5, 'days').toDate());
+  public toDate: FormControl = new FormControl(moment().toDate());
 
   constructor(public store:AppStore) {
   }
 
   ngOnInit(){
-    this.generatePeriods();
     this.tickerDataSubscription = this.store.tickerDataObserver.pipe(filter(r=> r!=null)).subscribe(result => {
       if(result){
         this.proccessTickerData(result)
@@ -104,33 +106,16 @@ export class TickerDataComponent implements OnInit {
   public chartLegend = false;
 
   public getTickerData(){
-    this.store.getTickerData(this.chosenTicker, this.chosenInterval.key, this.chosenPeriod.key);
+    let fromDate = (moment(this.fromDate.value)).format('YYYY-MM-DD')
+    let toDate = (moment(this.toDate.value)).format('YYYY-MM-DD')
+    this.store.getTickerData(this.chosenTicker, this.chosenIntervalType.key, this.chosenInterval, fromDate, toDate);
   }
 
-  public generatePeriods(){
-    let periods = [
-      new Period("1h", "1 Hour"),
-      new Period("1d", "1 Day"),
-      new Period("5d", "5 Days"),
-      new Period("1mo", "1 Month"),
-      new Period("3mo", "3 Months"),
-      new Period("6mo", "6 Months"),
-      new Period("1y", "1 Year")
-    ]
-    return periods;
-  }
-
-  public generateIntervals() {
+  public generateIntervalTypes() {
     let intervals = [
-      new Interval("1m", "1 Minute"),
-      new Interval("2m", "2 Minutes"),
-      new Interval("5m", "5 Minutes"),
-      new Interval("30m", "30 Minutes"),
-      new Interval("1h", "1 Hour"),
-      new Interval("1d", "1 day"),
-      new Interval("5d", "5 days"),
-      new Interval("1w", "1 week"),
-      new Interval("1mo", "1 month")
+      new Interval("minute", "Minute"),
+      new Interval("hour", "Hour"),
+      new Interval("day", "Day")
     ]
     return intervals;
   }
