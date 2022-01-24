@@ -59,9 +59,9 @@ def calcMACD(prices):
 
 class Trader:
 
-  def __init__(self, ticker, startbal, period, interval):
+  def __init__(self, dataInput, startbal):
     self.lastboughtAt = float(0)
-    self.env = StockEnv.StockEnv(ticker, startbal, period, interval)
+    self.env = StockEnv.StockEnv(dataInput, startbal)
     self.prices = []
     self.decided = 'Hold'
 

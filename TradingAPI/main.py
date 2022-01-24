@@ -3,9 +3,11 @@ from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
 import pandas as pd
 
+import PeakTrader
 import TimedTrader
 import TraderSD
 import TickerDataFetcher
+from DataInput import DataInput
 from PatternFinder import PatternFinder
 from StockEnv import StockEnv
 import Trader
@@ -13,6 +15,13 @@ import LongInvestor
 
 app = Flask(__name__)
 api = Api(app)
+
+
+def getDataInput(args):
+  dataInput = DataInput(ticker=str(args['ticker']), interval=int(args['interval']),
+                        intervalType=str(args['intervalType']), fromDate=str(args['fromDate']),
+                        toDate=str(args['toDate']))
+  return dataInput
 
 
 class Ticker(Resource):
@@ -27,10 +36,11 @@ class Ticker(Resource):
 
     args = parser.parse_args()
 
-    td = TickerDataFetcher.TickerDataFetcher(ticker=str(args['ticker']), interval=int(args['interval']), intervalType=str(args['intervalType']), fromDate=str(args['fromDate']), toDate=str(args['toDate']))
+    td = TickerDataFetcher.TickerDataFetcher(getDataInput(args))
     data = td.LoadData()
 
-    response = jsonify(dates=data.reset_index().iloc[:, 0].tolist(), opens=data['open'].tolist(), volumes=data['volume'].tolist())
+    response = jsonify(dates=data.reset_index().iloc[:, 0].tolist(), opens=data['open'].tolist(),
+                       volumes=data['volume'].tolist())
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response  # return data and 200 OK code
 
@@ -51,19 +61,15 @@ class StartRun(Resource):
 
     args = parser.parse_args()
 
-    trad = TimedTrader.Trader(args['ticker'], args['startBalance'], args['period'], args['interval'], 15, 16)
-    long = LongInvestor.Trader(args['ticker'], args['startBalance'], args['period'], args['interval'])
+    trad = TraderSD.Trader(getDataInput(args), args['startBalance'])
+    long = LongInvestor.Trader(getDataInput(args), startbal=args['startBalance'])
     trad.Run()
     long.Run()
 
-    tick = yf.Ticker(args['ticker'])
-    his = tick.history(period=str(args['period']), interval=str(args['interval'])).dropna()
 
-    macds, signals = Trader.calcMACD(trad.env.Data['Open'].tolist())
-
-    response = jsonify(states=[state.serialize() for state in trad.env.States], opens=his['Open'].tolist(),
+    response = jsonify(states=[state.serialize() for state in trad.env.States], opens=trad.env.Data['open'].tolist(),
                        longs=[state.serialize() for state in long.env.States],
-                       dates=his.reset_index().iloc[:, 0].tolist(), macd=macds, signals=signals)
+                       dates=trad.env.Data['timestamp'].tolist())
 
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
@@ -90,8 +96,6 @@ class CheckForDailyPatterns(Resource):
     response.headers.add("Access-Control-Allow-Origin", "*")
 
     return response
-
-
 
 
 api.add_resource(Ticker, '/ticker')
