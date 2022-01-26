@@ -9,8 +9,10 @@
 
   <div class="mover" style="background-color: #262626;" cdkDragHandle>
     <i class="material-icons point"  style="color: #9f9f9f" (click)="deleteMyself()">close</i>
-    <i class="material-icons point"  style="color: #9f9f9f" (click)="toggleVisibility()">visibility</i>
-    <i class="material-icons point"  style="color: #9f9f9f" (click)="togglePoints()">fiber_manual_record</i>
+    <i *ngIf="visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility</i>
+    <i *ngIf="!visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility_off</i>
+    <i *ngIf="showPoints" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="togglePoints()">fiber_manual_record</i>
+    <i *ngIf="!showPoints" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="togglePoints()">adjust</i>
   </div>
 
   <div [hidden]="!visible" style="height: 90%; width: 100%; padding: 5px">
