@@ -1,13 +1,17 @@
+import {ChartType} from "../Components/chart/chart.model";
+
 export class Data {
   constructor() {
     this.labels = new Array<string>();
     this.datasets = new Array<DataSet>();
     this.type = 'line';
+    this.chartType = ChartType.price;
   }
 
   labels: Array<string>;
   datasets: Array<DataSet>;
   type: string;
+  chartType: ChartType;
 }
 
 export class DataSet {

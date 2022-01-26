@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>Add Chart</h1>
+<div mat-dialog-content>
+  <p>Chart Type</p>
+  <mat-form-field appearance="outline" style="color: #efefef">
+    <mat-select [(ngModel)]="data.chartType" style="color: #efefef">
+      <mat-option *ngFor="let type of data.availableChartTypes" [value]="type">
+        {{chartTypes[type]}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data.chartType" cdkFocusInitial>Ok</button>
+</div>

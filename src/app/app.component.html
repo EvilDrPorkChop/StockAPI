@@ -1,35 +1,6 @@
 
-<div class="content" role="main">
+<div #container class="content" role="main">
 
-
-  <mat-expansion-panel style="background-color: #a6a6a6">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        Ticker View
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <app-ticker-data></app-ticker-data>
-  </mat-expansion-panel>
-
-  <mat-expansion-panel style="background-color: #a6a6a6">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        Trader View
-      </mat-panel-title>
-      <mat-panel-description>
-        This is pretty broke right now sorry
-      </mat-panel-description>
-    </mat-expansion-panel-header>
-    <app-trader-data></app-trader-data>
-  </mat-expansion-panel>
-
-  <mat-expansion-panel style="background-color: #a6a6a6">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        Ticker Pattern View
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <app-pattern-data></app-pattern-data>
-  </mat-expansion-panel>
+  <i class="material-icons float-end point" style="color: #9f9f9f" (click)="openSelector()">add</i>
 
 </div>

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {filter, Subscription} from "rxjs";
-import {Data, DataSet} from "../chart.model";
+import {Data, DataSet} from "../Models/chartData.model";
 import {AppStore, StateData, TickerData} from "../app.store";
 import {ChartOptions} from "chart.js";
 import {FormControl} from "@angular/forms";

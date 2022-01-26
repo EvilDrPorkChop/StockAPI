@@ -1,0 +1,34 @@
+<div #box class="resizable-draggable"
+     [style.width.px]="width"
+     [style.height.px]="height"
+     [style.transform]="'translate3d('+ left + 'px,' + top + 'px,' + '0px)'"
+     [class.active]="status === 1"
+     (window:mouseup)="setStatus($event, 0)"
+     cdkDrag
+>
+
+  <div class="mover" style="background-color: #262626;" cdkDragHandle>
+    <i class="material-icons point"  style="color: #9f9f9f" (click)="deleteMyself()">close</i>
+  </div>
+
+  <div style="height: 90%; width: 100%; padding: 5px">
+    <a class="chart-card" style="width: 100%; height: 80%">
+      <canvas #chart baseChart
+              [data]="data"
+              [type]="'line'"
+              [options]="chartModel.options(currentScale)">
+      </canvas>
+    </a>
+
+    <a class="card" *ngIf="this.chartModel.showScale()" style="width: 100%; height: 20%">
+      <mat-button-toggle-group [(value)]="currentScale" name="favoriteColor" aria-label="Favorite Color">
+        <mat-button-toggle value="minute">Minute</mat-button-toggle>
+        <mat-button-toggle value="hour">Hour</mat-button-toggle>
+        <mat-button-toggle value="day">Day</mat-button-toggle>
+        <mat-button-toggle value="week">Week</mat-button-toggle>
+        <mat-button-toggle value="month">Month</mat-button-toggle>
+      </mat-button-toggle-group>
+    </a>
+  </div>
+  <div class="resize-action" (mousedown)="setStatus($event, 1)"></div>
+</div>
