@@ -14,7 +14,7 @@ export class ChartComponent implements OnInit {
   @Input() data: Data;
   @Output() deleteEvent = new EventEmitter<ChartComponent>();
   public chartModel: ChartModel;
-  public currentScale: string = "minute";
+  public currentScale: string = "day";
   public minWidth = 323;
   public minHeight = 300;
   public previousHeight = this.minHeight;
@@ -29,6 +29,7 @@ export class ChartComponent implements OnInit {
   public status: number = 0;
   private mouseClick: {x: number, y: number, left: number, top: number}
   public visible = true;
+  public showPoints = true;
   constructor() {
 
   }
@@ -65,6 +66,12 @@ export class ChartComponent implements OnInit {
     this.status = status;
   }
 
+  getData(){
+    this.changeDataPointVisibility(this.showPoints);
+    return this.data;
+
+  }
+
   public toggleVisibility(override: boolean | null = null){
     if(override){
       this.visible = override;
@@ -80,6 +87,27 @@ export class ChartComponent implements OnInit {
       this.height = this.previousHeight;
     }
   }
+
+  public togglePoints(){
+    this.showPoints= !this.showPoints;
+    this.changeDataPointVisibility(this.showPoints)
+  }
+
+  public changeDataPointVisibility(show: boolean){
+    for(let dataset of this.data.datasets){
+      let pointNum = dataset.pointRadius.length;
+      dataset.pointRadius = new Array<number>();
+      for(let i = 0; i<pointNum; i++){
+        if(show){
+          dataset.pointRadius.push(3);
+        }
+        else{
+          dataset.pointRadius.push(0);
+        }
+      }
+    }
+  }
+
 
   @HostListener('window:mousemove', ['$event'])
   onMouseMove(event: MouseEvent){

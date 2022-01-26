@@ -36,18 +36,21 @@ export class DashboardComponentModel {
       this.dataSubscription = this.store.tickerDataObserver.pipe(filter(r=> r!=null)).subscribe(result => {
         if(result){
           this.proccessTickerData(result)
+          this.updateCharts();
           console.log(this.datas)
-
-          for(let cc of this.charts){
-            for(let dat of this.datas){
-              if (dat.chartType == cc.chartType){
-                cc.data = dat;
-                console.log(dat)
-              }
-            }
-          }
         }
       });
+    }
+  }
+
+  public updateCharts(){
+    for(let cc of this.charts){
+      for(let dat of this.datas){
+        if (dat.chartType == cc.chartType){
+          cc.data = dat;
+          console.log(dat)
+        }
+      }
     }
   }
 

@@ -10,12 +10,13 @@
   <div class="mover" style="background-color: #262626;" cdkDragHandle>
     <i class="material-icons point"  style="color: #9f9f9f" (click)="deleteMyself()">close</i>
     <i class="material-icons point"  style="color: #9f9f9f" (click)="toggleVisibility()">visibility</i>
+    <i class="material-icons point"  style="color: #9f9f9f" (click)="togglePoints()">fiber_manual_record</i>
   </div>
 
   <div [hidden]="!visible" style="height: 90%; width: 100%; padding: 5px">
     <a class="chart-card" style="width: 100%; height: 80%">
       <canvas #chart baseChart
-              [data]="data"
+              [data]="getData()"
               [type]="'line'"
               [options]="chartModel.options(currentScale)">
       </canvas>

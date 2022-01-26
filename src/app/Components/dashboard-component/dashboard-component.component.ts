@@ -81,6 +81,7 @@ export class DashboardComponentComponent implements OnInit {
     this.components.push(this.componentRef.instance)
     this.componentModel.charts = this.components;
     this.componentRef.instance.deleteEvent.subscribe((result: ChartComponent) => this.deleteHandler(result))
+    this.componentModel.updateCharts();
   }
 
   public deleteHandler(component: ChartComponent){
