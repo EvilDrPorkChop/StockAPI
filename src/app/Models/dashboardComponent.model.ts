@@ -18,6 +18,9 @@ export interface ComponentSelectorData {
 }
 
 export class DashboardComponentModel {
+  public ticker: string = 'aapl';
+  public fromDate: string = '';
+  public toDate: string = '';
   public type: ComponentType;
   public store: AppStore;
   public dataSubscription: Subscription = new Subscription();
@@ -33,7 +36,11 @@ export class DashboardComponentModel {
 
   public subscribe(){
     if(this.type == ComponentType.ticker) {
-      this.dataSubscription = this.store.tickerDataObserver.pipe(filter(r=> r!=null)).subscribe(result => {
+      this.dataSubscription = this.store.tickerDataObserver.pipe(filter(r=>
+        r!=null &&
+        r.ticker==this.ticker &&
+        r.fromDate ==this.fromDate &&
+        r.toDate==this.toDate)).subscribe(result => {
         if(result){
           this.proccessTickerData(result)
           this.updateCharts();
@@ -41,7 +48,11 @@ export class DashboardComponentModel {
       });
     }
     if(this.type == ComponentType.pattern){
-      this.dataSubscription = this.store.patternDataObserver.pipe(filter(r=> r!=null)).subscribe(result => {
+      this.dataSubscription = this.store.patternDataObserver.pipe(filter(r=>
+        r!=null &&
+        r.ticker==this.ticker &&
+        r.fromDate ==this.fromDate &&
+        r.toDate==this.toDate)).subscribe(result => {
         if(result){
           this.proccessPatternData(result)
           this.updateCharts();
@@ -116,6 +127,9 @@ export class DashboardComponentModel {
   }
 
   public loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string){
+    this.ticker = ticker;
+    this.fromDate = fromDate;
+    this.toDate = toDate;
     if(this.type == ComponentType.ticker) {
       this.store.getTickerData(ticker, intervalType.key, interval, fromDate, toDate);
     }
