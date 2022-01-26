@@ -10,7 +10,7 @@ import {Chart, ChartData, Color, ChartOptions, LinearScale, Title, ScaleOptions,
 import {AppStore, StateData, TickerData} from "./app.store";
 import {filter, Subscription} from "rxjs";
 import 'chartjs-adapter-moment';
-import {ComponentType} from "./Components/dashboard-component/dashboardComponent.model";
+import {ComponentType} from "./Models/dashboardComponent.model";
 import {DashboardComponentComponent} from "./Components/dashboard-component/dashboard-component.component";
 import {ChartSelectorComponent} from "./Components/chart-selector/chart-selector.component";
 import {MatDialog} from "@angular/material/dialog";

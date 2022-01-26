@@ -1,4 +1,4 @@
-import {AppStore} from "../../app.store";
+import {AppStore} from "../app.store";
 import {ChartOptions} from "chart.js";
 
 export enum ChartType{

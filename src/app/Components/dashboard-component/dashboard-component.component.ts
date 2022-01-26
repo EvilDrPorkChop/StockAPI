@@ -10,13 +10,13 @@ import {
   ViewChild, ViewContainerRef
 } from '@angular/core';
 import {AppStore} from "../../app.store";
-import {ComponentType, DashboardComponentModel} from "./dashboardComponent.model";
+import {ComponentType, DashboardComponentModel} from "../../Models/dashboardComponent.model";
 import {FormControl} from "@angular/forms";
 import * as moment from "moment";
 import {Interval} from "../../Models/intervals.model";
 import {Data} from "../../Models/chartData.model";
 import {InputType} from "../../Models/input.model";
-import {ChartType} from "../chart/chart.model";
+import {ChartType} from "../../Models/chart.model";
 import {ChartSelectorComponent} from "../chart-selector/chart-selector.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ChartComponent} from "../chart/chart.component";

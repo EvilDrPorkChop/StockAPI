@@ -1,5 +1,5 @@
 import {Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {ChartModel, ChartType} from "./chart.model";
+import {ChartModel, ChartType} from "../../Models/chart.model";
 import {AppStore} from "../../app.store";
 import {Data} from "../../Models/chartData.model";
 

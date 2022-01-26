@@ -1,10 +1,10 @@
-import {ChartType} from "../chart/chart.model";
-import {AppStore, TickerData} from "../../app.store";
+import {ChartType} from "./chart.model";
+import {AppStore, PatternData, TickerData} from "../app.store";
 import {filter, Subscription} from "rxjs";
-import {Data, DataSet} from "../../Models/chartData.model";
-import {InputType} from "../../Models/input.model";
-import {Interval} from "../../Models/intervals.model";
-import {ChartComponent} from "../chart/chart.component";
+import {Data, DataSet} from "./chartData.model";
+import {InputType} from "./input.model";
+import {Interval} from "./intervals.model";
+import {ChartComponent} from "../Components/chart/chart.component";
 
 export enum ComponentType{
   ticker = 0,
@@ -37,7 +37,14 @@ export class DashboardComponentModel {
         if(result){
           this.proccessTickerData(result)
           this.updateCharts();
-          console.log(this.datas)
+        }
+      });
+    }
+    if(this.type == ComponentType.pattern){
+      this.dataSubscription = this.store.patternDataObserver.pipe(filter(r=> r!=null)).subscribe(result => {
+        if(result){
+          this.proccessPatternData(result)
+          this.updateCharts();
         }
       });
     }
@@ -57,6 +64,9 @@ export class DashboardComponentModel {
   public getTitle(){
     if(this.type == ComponentType.ticker) {
       return "Ticker Data"
+    }
+    if(this.type == ComponentType.pattern) {
+      return "Ticker Pattern"
     }
     return "unknown"
   }
@@ -101,13 +111,17 @@ export class DashboardComponentModel {
     }
     if(this.type == ComponentType.pattern) {
       types.push(ChartType.pattern);
+      types.push(ChartType.price);
     }
     return types;
   }
 
   public loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string){
     if(this.type == ComponentType.ticker) {
-        this.store.getTickerData(ticker, intervalType.key, interval, fromDate, toDate);
+      this.store.getTickerData(ticker, intervalType.key, interval, fromDate, toDate);
+    }
+    if(this.type == ComponentType.pattern){
+      this.store.getPatternData(ticker, fromDate, toDate);
     }
   }
 
@@ -157,5 +171,76 @@ export class DashboardComponentModel {
     this.datas = []
     this.datas.push(priceData);
     this.datas.push(volumeData)
+  }
+
+  public proccessPatternData(result: PatternData){
+    let patternData = new Data();
+    let minmaxData = new Data();
+    let hourlyArray = [];
+    let dailyArray = [];
+    let minMaxArray = [];
+    let hourlyDataset = new DataSet();
+    let dailyDataset = new DataSet();
+    let minMaxDataset = new DataSet();
+
+
+    for(let i = 0; i <  result.hourPattern.length; i++){
+      hourlyArray.push({
+        x: result.hours[i],
+        y: result.hourPattern[i],
+        Time: i
+      });
+      hourlyDataset.pointRadius.push(3);
+      hourlyDataset.pointBackgroundColor.push('#106aa2');
+    }
+    hourlyArray.sort((a, b) => (a.x > b.x) ? 1 : -1)
+
+    for(let i = 0; i <  result.dayPattern.length; i++){
+      dailyArray.push({
+        x: result.hours[i],
+        y: result.dayPattern[i],
+        Time: i
+      });
+      dailyDataset.pointRadius.push(3);
+      dailyDataset.pointBackgroundColor.push('#1023a2');
+    }
+    dailyArray.sort((a, b) => (a.x > b.x) ? 1 : -1)
+
+    for(let i = 0; i <  result.minmaxs.length; i++){
+      minMaxArray.push({
+        x: result.dates[i],
+        y: result.minmaxs[i],
+        Time: i
+      });
+      minMaxDataset.pointRadius.push(3);
+      minMaxDataset.pointBackgroundColor.push('#1023a2');
+    }
+
+    console.log(hourlyArray);
+
+    hourlyDataset.data = hourlyArray;
+    hourlyDataset.label = 'Hourly';
+    hourlyDataset.borderColor = "#1097a2"
+    hourlyDataset.backgroundColor = "#1097a2"
+
+    dailyDataset.data = dailyArray;
+    dailyDataset.label = 'Daily';
+    dailyDataset.borderColor = "#104fa2"
+    dailyDataset.backgroundColor = "#104fa2"
+
+    minMaxDataset.data = minMaxArray;
+    minMaxDataset.label = 'Max %Diff from open';
+    minMaxDataset.borderColor = "#104fa2"
+    minMaxDataset.backgroundColor = "#104fa2"
+
+    patternData.datasets.push(hourlyDataset);
+    patternData.datasets.push(dailyDataset);
+    minmaxData.datasets.push(minMaxDataset);
+
+    patternData.chartType = ChartType.pattern;
+    minmaxData.chartType = ChartType.price;
+
+    this.datas.push(patternData);
+    this.datas.push(minmaxData)
   }
 }
