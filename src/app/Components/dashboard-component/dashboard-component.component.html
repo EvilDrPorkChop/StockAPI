@@ -9,11 +9,12 @@
 
   <div class="mover" style="background-color: #262626; margin-bottom: 30px" cdkDragHandle>
     <i class="material-icons point"  style="color: #9f9f9f" (click)="deleteMyself()">close</i>
+    <i class="material-icons point"  style="color: #9f9f9f" (click)="toggleVisibility()">visibility</i>
     <i style="color: #9f9f9f; margin-left: 50px; margin-bottom: 10px">{{this.componentModel.getTitle()}}</i>
     <i class="material-icons float-end point" style="color: #9f9f9f" (click)="openSelector()">add</i>
   </div>
 
-  <div class="card-container">
+  <div class="card-container" [hidden]="!this.visible">
     <div class="card" style="width: 100%">
       <mat-form-field *ngIf="inputs.includes(allInputs.ticker)" appearance="outline" [style.width.px]="inputWidth">
         <mat-label style="color: #efefef">Ticker</mat-label>

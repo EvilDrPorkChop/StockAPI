@@ -30,8 +30,10 @@ import {ChartComponent} from "../chart/chart.component";
 export class DashboardComponentComponent implements OnInit {
 
   //Stuff For Resizing ----------------------------------------------------------------------
-  public width: number = 800;
-  public height: number = 110;
+  public minWidth = 800;
+  public minHeight = 110;
+  public width: number = this.minWidth;
+  public height: number = this.minHeight;
   public left: number = 100;
   public top: number = 100;
   @ViewChild("box") public box: ElementRef;
@@ -40,6 +42,7 @@ export class DashboardComponentComponent implements OnInit {
   public mouse: {x: number, y: number}
   public status: number = 0;
   private mouseClick: {x: number, y: number, left: number, top: number}
+  public visible = true;
   //-----------------------------------------------------------------------------------------
 
 
@@ -111,6 +114,27 @@ export class DashboardComponentComponent implements OnInit {
     return this.width/(this.inputs.length + 1);
   }
 
+  public toggleVisibility(override = null){
+    if(override){
+      this.visible = override;
+    }
+    else{
+      this.visible = !this.visible;
+    }
+    if(!this.visible){
+      this.height = 50;
+      for(let chart of this.components){
+        chart.toggleVisibility(false);
+      }
+    }
+    else{
+      this.height = this.minHeight;
+      for(let chart of this.components){
+        chart.toggleVisibility(true);
+      }
+    }
+  }
+
 
   openSelector(): void {
     const dialogRef = this.dialog.open(ChartSelectorComponent, {
@@ -164,11 +188,9 @@ export class DashboardComponentComponent implements OnInit {
 
   private resize(){
       this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
-      if(this.width < 520){
-        this.width = 520;
+      if(this.width < this.minWidth){
+        this.width = this.minWidth;
       }
-      console.log(this.height)
-
   }
   //-------------------------------------------------------------------------------------------------------------------
 }

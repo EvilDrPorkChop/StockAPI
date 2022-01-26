@@ -15,9 +15,11 @@ export class ChartComponent implements OnInit {
   @Output() deleteEvent = new EventEmitter<ChartComponent>();
   public chartModel: ChartModel;
   public currentScale: string = "minute";
-
-  public width: number = 323;
-  public height: number = 300;
+  public minWidth = 323;
+  public minHeight = 300;
+  public previousHeight = this.minHeight;
+  public width: number = this.minWidth;
+  public height: number = this.minHeight;
   public left: number = 100;
   public top: number = 100;
   @ViewChild("box") public box: ElementRef;
@@ -26,7 +28,7 @@ export class ChartComponent implements OnInit {
   public mouse: {x: number, y: number}
   public status: number = 0;
   private mouseClick: {x: number, y: number, left: number, top: number}
-
+  public visible = true;
   constructor() {
 
   }
@@ -63,6 +65,22 @@ export class ChartComponent implements OnInit {
     this.status = status;
   }
 
+  public toggleVisibility(override: boolean | null = null){
+    if(override){
+      this.visible = override;
+    }
+    else{
+      this.visible = !this.visible;
+    }
+    if(!this.visible){
+      this.previousHeight = this.height;
+      this.height = 50;
+    }
+    else{
+      this.height = this.previousHeight;
+    }
+  }
+
   @HostListener('window:mousemove', ['$event'])
   onMouseMove(event: MouseEvent){
     this.mouse = { x: event.clientX, y: event.clientY };
@@ -73,11 +91,11 @@ export class ChartComponent implements OnInit {
   private resize(){
     this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
     this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
-    if(this.width < 323){
-      this.width = 323;
+    if(this.width < this.minWidth){
+      this.width = this.minWidth;
     }
-    if(this.height < 300){
-      this.height = 300;
+    if(this.height < this.minHeight){
+      this.height = this.minHeight;
     }
   }
 
