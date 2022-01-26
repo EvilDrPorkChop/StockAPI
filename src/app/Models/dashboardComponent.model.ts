@@ -54,8 +54,7 @@ export class DashboardComponentModel {
     for(let cc of this.charts){
       for(let dat of this.datas){
         if (dat.chartType == cc.chartType){
-          cc.data = dat;
-          console.log(dat)
+          cc.updateData(dat);
         }
       }
     }

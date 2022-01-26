@@ -1,12 +1,22 @@
-import {Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy, ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {ChartModel, ChartType} from "../../Models/chart.model";
-import {AppStore} from "../../app.store";
 import {Data} from "../../Models/chartData.model";
 
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.scss']
+  styleUrls: ['./chart.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChartComponent implements OnInit {
 
@@ -30,7 +40,7 @@ export class ChartComponent implements OnInit {
   private mouseClick: {x: number, y: number, left: number, top: number}
   public visible = true;
   public showPoints = true;
-  constructor() {
+  constructor(private changeDetector: ChangeDetectorRef) {
 
   }
 
@@ -66,10 +76,10 @@ export class ChartComponent implements OnInit {
     this.status = status;
   }
 
-  getData(){
+  updateData(data: Data){
+    this.data = data;
     this.changeDataPointVisibility(this.showPoints);
-    return this.data;
-
+    this.changeDetector.detectChanges();
   }
 
   public toggleVisibility(override: boolean | null = null){
