@@ -3,7 +3,7 @@
      [style.height.px]="height"
      [style.transform]="'translate3d('+ left + 'px,' + top + 'px,' + '0px)'"
      [class.active]="resizing"
-     (window:mouseup)="setStatus($event, 0)"
+     (window:mouseup)="setStatus($event, false)"
      cdkDrag
 >
 
@@ -38,5 +38,5 @@
       </mat-button-toggle-group>
     </a>
   </div>
-  <div class="resize-action" (click)="toggleStatus()"></div>
+  <div class="resize-action" (mousedown)="setStatus($event, true)"></div>
 </div>

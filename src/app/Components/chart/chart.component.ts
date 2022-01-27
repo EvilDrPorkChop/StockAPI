@@ -75,10 +75,10 @@ export class ChartComponent implements OnInit {
     this.resizing = !this.resizing;
   }
 
-  setStatus(event: MouseEvent, status: number){
-    if(status === 1) event.stopPropagation();
+  setStatus(event: MouseEvent, status: boolean){
+    if(status) event.stopPropagation();
     else this.loadBox();
-    //this.status = status;
+    this.resizing = status;
   }
 
   updateData(data: Data){
