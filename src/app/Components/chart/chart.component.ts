@@ -36,10 +36,11 @@ export class ChartComponent implements OnInit {
   private boxPosition: { left: number, top: number };
   private containerPos: { left: number, top: number, right: number, bottom: number };
   public mouse: {x: number, y: number}
-  public status: number = 0;
+  public resizing: boolean = false;
   private mouseClick: {x: number, y: number, left: number, top: number}
   public visible = true;
-  public showPoints = true;
+  public showPoints = false;
+  public chartWidth = 100;
   constructor(private changeDetector: ChangeDetectorRef) {
 
   }
@@ -70,10 +71,14 @@ export class ChartComponent implements OnInit {
     this.containerPos = { left, top, right, bottom };
   }
 
+  toggleStatus(){
+    this.resizing = !this.resizing;
+  }
+
   setStatus(event: MouseEvent, status: number){
     if(status === 1) event.stopPropagation();
     else this.loadBox();
-    this.status = status;
+    //this.status = status;
   }
 
   updateData(data: Data){
@@ -103,6 +108,22 @@ export class ChartComponent implements OnInit {
     this.changeDataPointVisibility(this.showPoints)
   }
 
+  public onZoom(ev: WheelEvent){
+    if(ev.deltaY>0){
+      this.chartWidth = this.chartWidth - 10;
+    }
+    else {
+      this.chartWidth = this.chartWidth + 10;
+    }
+    if(this.chartWidth > 1000){
+      this.chartWidth = 1000;
+    }
+    if(this.chartWidth < 100){
+      this.chartWidth = 100;
+    }
+    this.changeDetector.detectChanges();
+  }
+
   public changeDataPointVisibility(show: boolean){
     for(let dataset of this.data.datasets){
       let pointNum = dataset.pointRadius.length;
@@ -122,8 +143,7 @@ export class ChartComponent implements OnInit {
   @HostListener('window:mousemove', ['$event'])
   onMouseMove(event: MouseEvent){
     this.mouse = { x: event.clientX, y: event.clientY };
-
-    if(this.status == 1) this.resize();
+    if(this.resizing) this.resize();
   }
 
   private resize(){

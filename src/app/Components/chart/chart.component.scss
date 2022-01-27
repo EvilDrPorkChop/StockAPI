@@ -55,3 +55,12 @@
     cursor: pointer;
   }
 }
+
+.chart-card{
+  transition: none;
+}
+
+.myChartWrapper{
+  width: 100%;
+  overflow-x: scroll;
+}
