@@ -94,6 +94,9 @@ export class DashboardComponentComponent implements OnInit {
     this.componentRef.instance.outerContainerWidth = this.getWidth();
     this.componentRef.instance.outerContainerEvent = this.sizeChangedSubject.asObservable();
     this.components.push(this.componentRef.instance)
+    this.componentRef.instance.bringToFrontEvent.subscribe(comp => {
+      this.bringComponentToFront(comp);
+    })
     this.componentModel.charts = this.components;
     this.componentRef.instance.deleteEvent.subscribe((result: ChartComponent) => this.deleteHandler(result))
     this.componentModel.updateCharts();
@@ -106,6 +109,18 @@ export class DashboardComponentComponent implements OnInit {
       this.container.remove(componentIndex);
       this.components.splice(componentIndex, 1);
       this.componentModel.charts = this.components;
+    }
+  }
+
+  public bringComponentToFront(component: ChartComponent){
+    const componentIndex = this.components.indexOf(component);
+    if(componentIndex !== -1 && componentIndex < this.components.length-1){
+      let viewRef = this.container.detach(componentIndex);
+      this.components.splice(componentIndex, 1);
+      if(viewRef){
+        this.container.insert(viewRef);
+        this.components.push(component);
+      }
     }
   }
 

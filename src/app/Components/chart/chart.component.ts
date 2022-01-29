@@ -45,8 +45,8 @@ export class ChartComponent implements OnInit {
   @Input() outerContainer: ElementRef;
   @Input() outerContainerHeight: number;
   @Input() outerContainerWidth: number;
-
   @Input() outerContainerEvent: Observable<number[]>;
+  @Output() bringToFrontEvent =new EventEmitter<ChartComponent>();
   outerContainerEventSubscription: Subscription;
 
   private boxPosition: { left: number, top: number};
@@ -85,6 +85,10 @@ export class ChartComponent implements OnInit {
 
   public deleteMyself(){
     this.deleteEvent.emit(this);
+  }
+
+  public emitBringToFront(){
+    this.bringToFrontEvent.emit(this);
   }
 
   private loadBox(){

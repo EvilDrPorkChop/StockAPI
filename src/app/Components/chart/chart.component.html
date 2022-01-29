@@ -3,6 +3,7 @@
      [style.height.px]="height"
      [style.transform]="'translate3d('+ left + 'px,' + top + 'px,' + '0px)'"
      [class.active]="resizing || moving"
+     (mousedown)="emitBringToFront()"
      (window:mouseup)="setResizeStatus($event, false); setMoveStatus($event, false)"
 >
 
