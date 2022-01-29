@@ -34,8 +34,12 @@ export class ChartComponent implements OnInit {
   public previousHeight = this.minHeight;
   public width: number = this.minWidth;
   public height: number = this.minHeight;
+  public lastValidWidth: number = this.width;
+  public lastValidHeight: number = this.height;
   public left: number = 100;
   public top: number = 100;
+  public lastValidTop: number = this.top;
+  public lastValidLeft: number = this.left;
 
   @ViewChild("box") public box: ElementRef;
   @Input() outerContainer: ElementRef;
@@ -101,14 +105,18 @@ export class ChartComponent implements OnInit {
 
   setResizeStatus(event: MouseEvent, status: boolean){
     if(status) event.stopPropagation();
-    else this.loadBox();
+    else {
+      this.loadBox();
+    }
     this.loadContainer();
     this.resizing = status;
   }
 
   setMoveStatus(event: MouseEvent, status: boolean){
     if(status) this.mouseClick = { x: event.clientX, y: event.clientY, left: this.left, top: this.top };
-    else this.loadBox();
+    else {
+      this.loadBox();
+    }
     this.loadContainer();
     this.moving = status;
   }
@@ -181,26 +189,69 @@ export class ChartComponent implements OnInit {
 
   private move(){
     console.log("moving")
-    if(this.moveCondMeet()){
-      this.left = this.mouseClick.left + (this.mouse.x - this.mouseClick.x);
-      this.top = this.mouseClick.top + (this.mouse.y - this.mouseClick.y);
+    this.left = this.mouseClick.left + (this.mouse.x - this.mouseClick.x);
+    this.top = this.mouseClick.top + (this.mouse.y - this.mouseClick.y);
+    if(!this.moveCondMeet()){
+      let {left, top} = this.findClosestValidPosForMove();
+      this.left = left;
+      this.top = top;
     }
   }
 
   private resize(){
-    if(this.resizeCondMeet()) {
-      this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
-      this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
-      if (this.width < this.minWidth) {
-        this.width = this.minWidth;
-      }
-      if (this.height < this.minHeight) {
-        this.height = this.minHeight;
-      }
+    this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
+    this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
+    if (this.width < this.minWidth) {
+      this.width = this.minWidth;
+    }
+    if (this.height < this.minHeight) {
+      this.height = this.minHeight;
+    }
+    if(!this.resizeCondMeet()) {
+      let {width, height} = this.findClosestValidPosForResize();
+      this.width = width;
+      this.height = height;
     }
   }
+
   private resizeCondMeet(){
     return (this.mouse.x < this.containerPos.right && this.mouse.y < this.containerPos.bottom-100);
+  }
+
+  public findClosestValidPosForResize(){
+    let width = this.width;
+    let height = this.height;
+    if(this.mouse.x > this.containerPos.right){
+      width = Number(this.containerPos.right > this.boxPosition.left) ? this.containerPos.right - this.boxPosition.left : 0;
+    }
+    if(this.mouse.y > this.containerPos.bottom-100){
+      height = Number(this.containerPos.bottom-100 > this.boxPosition.top) ? this.containerPos.bottom-100 - this.boxPosition.top : 0;
+    }
+    return {width, height}
+  }
+
+  private findClosestValidPosForMove(){
+    let top = this.top;
+    let left = this.left;
+    const offsetLeft = this.mouseClick.x - this.boxPosition.left;
+    const offsetRight = this.width - offsetLeft;
+    const offsetTop = this.mouseClick.y - this.boxPosition.top;
+    const offsetBottom = this.height - offsetTop;
+
+    if(this.mouse.x < this.containerPos.left + offsetLeft){
+      left = this.mouseClick.left + (this.containerPos.left + offsetLeft - this.mouseClick.x);
+    }
+    if(this.mouse.x > this.containerPos.right - offsetRight){
+      left = this.mouseClick.left + (this.containerPos.right - offsetRight - this.mouseClick.x);
+    }
+    if(this.mouse.y < this.containerPos.top + offsetTop){
+      top = this.mouseClick.top + (this.containerPos.top + offsetTop - this.mouseClick.y);
+    }
+    if(this.mouse.y > this.containerPos.bottom - offsetBottom - 100){
+      top = this.mouseClick.top + (this.containerPos.bottom - offsetBottom - 100 - this.mouseClick.y);
+    }
+
+    return {left, top}
   }
 
   private moveCondMeet(){
