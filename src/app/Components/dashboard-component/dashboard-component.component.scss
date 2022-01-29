@@ -4,6 +4,7 @@
   outline-color: #262626;
   flex-direction: row;
   overflow: hidden;
+  position: absolute;
   &.active {
     outline: dashed #262626;
     transform: translateY(-0.25rem);
@@ -43,6 +44,7 @@ span:nth-of-type(3) {
 }
 
 .mover {
+  user-select: none;
   &:hover{
     cursor: grab;
   }
@@ -56,4 +58,8 @@ span:nth-of-type(3) {
   &:hover{
     cursor: pointer;
   }
+}
+
+.card {
+  user-select: none;
 }

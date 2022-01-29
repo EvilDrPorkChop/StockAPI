@@ -3,6 +3,7 @@
   border-radius: 10px;
   outline-color: #262626;
   overflow: hidden;
+  position: absolute;
   &.active {
     outline: dashed #262626;
     transform: translateY(-0.25rem);
@@ -42,6 +43,7 @@
 }
 
 .mover {
+  user-select: none;
   &:hover{
     cursor: grab;
   }
@@ -65,3 +67,9 @@
   width: 100%;
   overflow-x: scroll;
 }
+
+
+.card {
+  user-select: none;
+}
+
