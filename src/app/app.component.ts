@@ -6,15 +6,13 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import {Chart, ChartData, Color, ChartOptions, LinearScale, Title, ScaleOptions, Scale, ScaleChartOptions} from "chart.js";
-import {AppStore, StateData, TickerData} from "./app.store";
-import {filter, Subscription} from "rxjs";
+import {Chart, LinearScale, Title} from "chart.js";
 import 'chartjs-adapter-moment';
-import {ComponentType} from "./Models/dashboardComponent.model";
+import {ComponentType} from "./Models/ComponentModels/Component.model";
 import {DashboardComponentComponent} from "./Components/dashboard-component/dashboard-component.component";
-import {ChartSelectorComponent} from "./Components/chart-selector/chart-selector.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ComponentSelectorComponent} from "./Components/component-selector/component-selector.component";
+
 Chart.register(LinearScale, Title);
 
 @Component({
@@ -35,8 +33,7 @@ export class AppComponent {
   }
 
   public addComponent(componentType: ComponentType){
-    const factory: ComponentFactory<DashboardComponentComponent> = this.resolver.resolveComponentFactory(DashboardComponentComponent);
-    this.componentRef = this.container.createComponent(factory);
+    this.componentRef = this.container.createComponent(DashboardComponentComponent);
     this.componentRef.instance.componentType = componentType;
     this.components.push(this.componentRef.instance)
     this.componentRef.instance.deleteEvent.subscribe((result: DashboardComponentComponent) => this.deleteHandler(result))
@@ -54,6 +51,10 @@ export class AppComponent {
 
   ngOnDestroy() {
     this.componentRef.destroy();
+  }
+  
+  ngAfterViewInit() {
+    this.addComponent(ComponentType.ticker);
   }
 
   public openSelector(){

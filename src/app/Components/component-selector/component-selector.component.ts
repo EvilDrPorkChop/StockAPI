@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {ChartSelectorData, ChartType} from "../../Models/chart.model";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {ComponentSelectorData, ComponentType} from "../../Models/dashboardComponent.model";
+import {ComponentSelectorData, ComponentType} from "../../Models/ComponentModels/Component.model";
 
 @Component({
   selector: 'app-component-selector',

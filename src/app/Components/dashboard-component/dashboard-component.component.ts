@@ -10,7 +10,7 @@ import {
   ViewChild, ViewContainerRef
 } from '@angular/core';
 import {AppStore} from "../../app.store";
-import {ComponentType, DashboardComponentModel} from "../../Models/dashboardComponent.model";
+import {ComponentType, ComponentModel} from "../../Models/ComponentModels/Component.model";
 import {FormControl} from "@angular/forms";
 import * as moment from "moment";
 import {Interval} from "../../Models/intervals.model";
@@ -20,6 +20,7 @@ import {ChartType} from "../../Models/chart.model";
 import {ChartSelectorComponent} from "../chart-selector/chart-selector.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ChartComponent} from "../chart/chart.component";
+import {ComponentBuilder} from "../../Models/ComponentModels/ComponentBuilder";
 
 @Component({
   selector: 'app-dashboard-component',
@@ -56,7 +57,7 @@ export class DashboardComponentComponent implements OnInit {
   public currentScale: string = "minute";
   public fromDate: FormControl = new FormControl(moment().subtract(5, 'days').toDate());
   public toDate: FormControl = new FormControl(moment().toDate());
-  public componentModel: DashboardComponentModel;
+  public componentModel: ComponentModel;
   public inputs: InputType[];
   public store: AppStore;
   public allInputs = InputType;
@@ -68,7 +69,8 @@ export class DashboardComponentComponent implements OnInit {
 
 
   constructor(store: AppStore, public dialog: MatDialog, private resolver: ComponentFactoryResolver) {
-    this.componentModel = new DashboardComponentModel(this.componentType, store)
+    let compBuilder = new ComponentBuilder(store);
+    this.componentModel = compBuilder.buildComponentModel(this.componentType);
     this.inputs = this.componentModel.getInputs();
     this.store = store
   }
@@ -95,7 +97,8 @@ export class DashboardComponentComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.componentModel = new DashboardComponentModel(this.componentType, this.store)
+    let compBuilder = new ComponentBuilder(this.store);
+    this.componentModel = compBuilder.buildComponentModel(this.componentType);
     this.inputs = this.componentModel.getInputs();
   }
 
@@ -108,7 +111,9 @@ export class DashboardComponentComponent implements OnInit {
   public getData(){
     let fromDate = (moment(this.fromDate.value)).format('YYYY-MM-DD')
     let toDate = (moment(this.toDate.value)).format('YYYY-MM-DD')
-    this.componentModel.loadData(this.chosenTicker, this.chosenIntervalType, this.chosenInterval, fromDate, toDate);
+    if(this.componentModel){
+      this.componentModel.loadData(this.chosenTicker, this.chosenIntervalType, this.chosenInterval, fromDate, toDate);
+    }
   }
 
   public get inputWidth(){
