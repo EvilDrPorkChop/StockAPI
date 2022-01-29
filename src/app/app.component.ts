@@ -40,6 +40,9 @@ export class AppComponent {
     this.componentRef.instance.componentType = selectorData.componentType;
     this.componentRef.instance.traderType = selectorData.traderType;
     this.components.push(this.componentRef.instance)
+    this.componentRef.instance.bringToFrontEvent.subscribe(comp => {
+      this.bringComponentToFront(comp);
+    })
     console.log("Adding component type: "+ComponentType[selectorData.componentType]+" and trader type: "+ TraderType[selectorData.traderType])
     this.componentRef.instance.deleteEvent.subscribe((result: DashboardComponentComponent) => this.deleteHandler(result))
   }
@@ -49,6 +52,18 @@ export class AppComponent {
     if(componentIndex !== -1){
       this.container.remove(componentIndex);
       this.components.splice(componentIndex, 1);
+    }
+  }
+
+  public bringComponentToFront(component: DashboardComponentComponent){
+    const componentIndex = this.components.indexOf(component);
+    if(componentIndex !== -1 && componentIndex < this.components.length-1){
+        let viewRef = this.container.detach(componentIndex);
+        this.components.splice(componentIndex, 1);
+        if(viewRef){
+          this.container.insert(viewRef);
+          this.components.push(component);
+        }
     }
   }
 

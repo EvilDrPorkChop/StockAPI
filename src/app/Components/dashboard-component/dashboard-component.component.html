@@ -7,7 +7,7 @@
      cdkDrag
 >
 
-  <div class="mover" style="background-color: #262626; margin-bottom: 30px" cdkDragHandle>
+  <div class="mover" style="background-color: #262626; margin-bottom: 30px" (mousedown)="emitBringToFront()" cdkDragHandle>
     <i class="material-icons point"  style="color: #9f9f9f" (click)="deleteMyself()">close</i>
     <i *ngIf="visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility</i>
     <i *ngIf="!visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility_off</i>

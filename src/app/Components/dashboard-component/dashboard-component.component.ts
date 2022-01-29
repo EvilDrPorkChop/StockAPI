@@ -57,6 +57,7 @@ export class DashboardComponentComponent implements OnInit {
   @Input() componentType: ComponentType;
   @Input() traderType: TraderType;
   @Output() deleteEvent = new EventEmitter<DashboardComponentComponent>();
+  @Output() bringToFrontEvent = new EventEmitter<DashboardComponentComponent>();
   public chosenTicker: string = "aapl";
   public intervalTypes: Interval[] = Interval.getIntervals();
   public chosenIntervalType: Interval = this.intervalTypes[1];
@@ -174,7 +175,9 @@ export class DashboardComponentComponent implements OnInit {
     this.deleteEvent.emit(this);
   }
 
-
+  public emitBringToFront(){
+    this.bringToFrontEvent.emit(this);
+  }
 
 
 
