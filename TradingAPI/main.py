@@ -1,9 +1,10 @@
 import yfinance as yf
 from flask import Flask, jsonify
-from flask_restful import Resource, Api, reqparse
+from flask_restful import Resource, Api, reqparse, http_status_message
 import pandas as pd
 
 import PeakTrader
+import SwingTrader
 import TimedTrader
 import TraderSD
 import TickerDataFetcher
@@ -15,6 +16,21 @@ import LongInvestor
 
 app = Flask(__name__)
 api = Api(app)
+
+def runMacdTrader(dataInput, startBal):
+  trad = TraderSD.Trader(dataInput, startBal)
+  long = LongInvestor.Trader(dataInput, startBal)
+  trad.Run()
+  long.Run()
+  response = jsonify(states=[state.serialize() for state in trad.env.States], opens=trad.env.Data['open'].tolist(),
+                     longs=[state.serialize() for state in long.env.States],
+                     dates=trad.env.Data['timestamp'].tolist())
+  response.headers.add("Access-Control-Allow-Origin", "*")
+  return response
+
+def runSwingTrader():
+  SwingTrader.runTrader()
+
 
 
 def getDataInput(args):
@@ -58,21 +74,20 @@ class StartRun(Resource):
     parser.add_argument('fromDate', required=True)
     parser.add_argument('toDate', required=True)
     parser.add_argument('startBalance', required=True)
+    parser.add_argument('trader', required=True)
 
     args = parser.parse_args()
 
-    trad = TraderSD.Trader(getDataInput(args), args['startBalance'])
-    long = LongInvestor.Trader(getDataInput(args), startbal=args['startBalance'])
-    trad.Run()
-    long.Run()
+    trader = args['trader']
+    dataInput = getDataInput(args)
+    if(trader == 'macd'):
+      return runMacdTrader(dataInput, args['startBalance'])
+    elif(trader == 'swing'):
+      runSwingTrader()
+      return "Running", 200
+    else:
+      return "Unknown trader type", 400
 
-
-    response = jsonify(states=[state.serialize() for state in trad.env.States], opens=trad.env.Data['open'].tolist(),
-                       longs=[state.serialize() for state in long.env.States],
-                       dates=trad.env.Data['timestamp'].tolist())
-
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
 
 
 class CheckForDailyPatterns(Resource):

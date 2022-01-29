@@ -7,9 +7,9 @@ import {Interval} from "./intervals.model";
 import {ChartComponent} from "../Components/chart/chart.component";
 
 export enum ComponentType{
-  ticker = 0,
-  trader = 1,
-  pattern = 2
+  ticker,
+  trader,
+  pattern
 }
 
 export interface ComponentSelectorData {
@@ -17,7 +17,24 @@ export interface ComponentSelectorData {
   allComponentTypes: ComponentType[];
 }
 
-export class DashboardComponentModel {
+export class ComponentBuilder{
+  public store: AppStore;
+  constructor(store: AppStore) {
+    this.store = store;
+  }
+
+  buildComponentModel(type: ComponentType): ComponentModel{
+    if(type == ComponentType.ticker){
+      return new TickerDataComponent(this.store);
+    }
+    if(type == ComponentType.pattern){
+      return new PatternDataComponent(this.store);
+    }
+    return new TickerDataComponent(this.store);
+  }
+}
+
+export abstract class ComponentModel {
   public ticker: string = 'aapl';
   public fromDate: string = '';
   public toDate: string = '';
@@ -28,40 +45,16 @@ export class DashboardComponentModel {
   public chartTypes: ChartType[] = [];
   public inputs: string[] = [];
   public charts: ChartComponent[] = [];
+  public title: string;
 
   constructor(type: ComponentType, store: AppStore) {
     this.type = type;
     this.store = store;
   }
 
-  public subscribe(){
-    if(this.type == ComponentType.ticker) {
-      this.dataSubscription = this.store.tickerDataObserver.pipe(filter(r=>
-        r!=null &&
-        r.ticker==this.ticker &&
-        r.fromDate ==this.fromDate &&
-        r.toDate==this.toDate)).subscribe(result => {
-        if(result){
-          this.proccessTickerData(result)
-          this.updateCharts();
-        }
-      });
-    }
-    if(this.type == ComponentType.pattern){
-      this.dataSubscription = this.store.patternDataObserver.pipe(filter(r=>
-        r!=null &&
-        r.ticker==this.ticker &&
-        r.fromDate ==this.fromDate &&
-        r.toDate==this.toDate)).subscribe(result => {
-        if(result){
-          this.proccessPatternData(result)
-          this.updateCharts();
-        }
-      });
-    }
-  }
+  public abstract subscribe(): void
 
-  public updateCharts(){
+  public updateCharts(): void{
     for(let cc of this.charts){
       for(let dat of this.datas){
         if (dat.chartType == cc.chartType){
@@ -72,13 +65,7 @@ export class DashboardComponentModel {
   }
 
   public getTitle(){
-    if(this.type == ComponentType.ticker) {
-      return "Ticker Data"
-    }
-    if(this.type == ComponentType.pattern) {
-      return "Ticker Pattern"
-    }
-    return "unknown"
+    return this.title;
   }
 
   public getData(index: number){
@@ -88,57 +75,58 @@ export class DashboardComponentModel {
     return new Data();
   }
 
-  public getInputs(){
-    let inputs: InputType[] = []
-    if(this.type == ComponentType.ticker) {
-      inputs.push(InputType.ticker);
-      inputs.push(InputType.interval);
-      inputs.push(InputType.intervalType);
-      inputs.push(InputType.fromDate);
-      inputs.push(InputType.toDate);
-    }
-    if(this.type == ComponentType.trader) {
-      inputs.push(InputType.ticker);
-      inputs.push(InputType.interval);
-      inputs.push(InputType.intervalType);
-      inputs.push(InputType.fromDate);
-      inputs.push(InputType.toDate);
-    }
-    if(this.type == ComponentType.pattern) {
-      inputs.push(InputType.ticker);
-      inputs.push(InputType.fromDate);
-      inputs.push(InputType.toDate);
-    }
+  public abstract getInputs(): InputType[]
 
-    return inputs;
+  public abstract getAvailableChartTypes(): ChartType[]
+
+  public abstract loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string): void
+
+  public abstract processData(result: any): void
+}
+
+export class TickerDataComponent extends ComponentModel{
+
+  constructor(store: AppStore) {
+    super(ComponentType.ticker, store);
   }
 
-  public getAvailableChartTypes(){
+  public subscribe() {
+    this.dataSubscription = this.store.tickerDataObserver.pipe(filter(r =>
+      r != null &&
+      r.ticker == this.ticker &&
+      r.fromDate == this.fromDate &&
+      r.toDate == this.toDate)).subscribe(result => {
+      if (result) {
+        this.processData(result)
+        this.updateCharts();
+      }
+    });
+  }
+
+  public getInputs() {
+    let inputs: InputType[] = []
+    inputs.push(InputType.ticker);
+    inputs.push(InputType.interval);
+    inputs.push(InputType.intervalType);
+    inputs.push(InputType.fromDate);
+    inputs.push(InputType.toDate);
+    return inputs;
+  }
+  public getAvailableChartTypes(): ChartType[]{
     let types: ChartType[] = []
-    if(this.type == ComponentType.ticker) {
-      types.push(ChartType.price);
-      types.push(ChartType.volume);
-    }
-    if(this.type == ComponentType.pattern) {
-      types.push(ChartType.pattern);
-      types.push(ChartType.price);
-    }
+    types.push(ChartType.price);
+    types.push(ChartType.volume);
     return types;
   }
 
-  public loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string){
+  public loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string): void{
     this.ticker = ticker;
     this.fromDate = fromDate;
     this.toDate = toDate;
-    if(this.type == ComponentType.ticker) {
-      this.store.getTickerData(ticker, intervalType.key, interval, fromDate, toDate);
-    }
-    if(this.type == ComponentType.pattern){
-      this.store.getPatternData(ticker, fromDate, toDate);
-    }
+    this.store.getTickerData(ticker, intervalType.key, interval, fromDate, toDate);
   }
 
-  public proccessTickerData(result: TickerData){
+  public processData(result: TickerData){
     let priceData = new Data();
     let volumeData = new Data();
     let openArray = [];
@@ -185,8 +173,50 @@ export class DashboardComponentModel {
     this.datas.push(priceData);
     this.datas.push(volumeData)
   }
+}
 
-  public proccessPatternData(result: PatternData){
+export class PatternDataComponent extends ComponentModel{
+
+  constructor(store: AppStore) {
+    super(ComponentType.ticker, store);
+  }
+
+  public subscribe() {
+    this.dataSubscription = this.store.patternDataObserver.pipe(filter(r=>
+      r!=null &&
+      r.ticker==this.ticker &&
+      r.fromDate ==this.fromDate &&
+      r.toDate==this.toDate)).subscribe(result => {
+      if (result) {
+        this.processData(result)
+        this.updateCharts();
+      }
+    });
+  }
+
+  public getInputs() {
+    let inputs: InputType[] = []
+    inputs.push(InputType.ticker);
+    inputs.push(InputType.fromDate);
+    inputs.push(InputType.toDate);
+    return inputs;
+  }
+
+  public getAvailableChartTypes(): ChartType[]{
+    let types: ChartType[] = []
+    types.push(ChartType.pattern);
+    types.push(ChartType.price);
+    return types;
+  }
+
+  public loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string): void{
+    this.ticker = ticker;
+    this.fromDate = fromDate;
+    this.toDate = toDate;
+    this.store.getPatternData(ticker, fromDate, toDate);
+  }
+
+  public processData(result: PatternData){
     let patternData = new Data();
     let minmaxData = new Data();
     let hourlyArray = [];
