@@ -69,7 +69,7 @@ export class ChartComponent implements OnInit {
     let chartBuilder = new ChartBuilder()
     this.chartModel = chartBuilder.buildChartModel(this.chartType);
     if(!this.chartModel.showScale()){
-      this.chartHeight = 100;
+      this.chartHeight;
     }
     //Update our version of our parents width and height when the parent emits that it has changed
     this.outerContainerEventSubscription = this.outerContainerEvent.subscribe(data => {
@@ -89,6 +89,15 @@ export class ChartComponent implements OnInit {
 
   public emitBringToFront(){
     this.bringToFrontEvent.emit(this);
+  }
+
+  public getChartHeight(){
+    if(this.chartModel.showScale()){
+      return this.height - 90;
+    }
+    else {
+      return this.height;
+    }
   }
 
   private loadBox(){
@@ -128,6 +137,7 @@ export class ChartComponent implements OnInit {
   updateData(data: Data){
     this.data = data;
     this.changeDataPointVisibility(this.showPoints);
+    this.chartModel.numOfDatasets = this.data.datasets.length
     this.changeDetector.detectChanges();
   }
 
