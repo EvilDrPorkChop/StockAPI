@@ -161,11 +161,13 @@ export class DashboardComponentComponent implements OnInit {
   openSelector(): void {
     const dialogRef = this.dialog.open(ChartSelectorComponent, {
       width: '250px',
-      data: {chartType: this.componentModel.getAvailableChartTypes()[0], availableChartTypes: this.componentModel.getAvailableChartTypes()},
+      data: {chartType: this.componentModel.getAvailableChartTypes()[0], availableChartTypes: this.componentModel.getAvailableChartTypes(), isCancelled: false},
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.addComponent(result);
+      if(!result.isCancelled){
+        this.addComponent(result.chartType);
+      }
       console.log('The dialog was closed');
       console.log(result);
     });

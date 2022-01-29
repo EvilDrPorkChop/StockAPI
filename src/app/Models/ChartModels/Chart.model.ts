@@ -9,10 +9,6 @@ export enum ChartType{
   macd
 }
 
-export interface ChartSelectorData {
-  chartType: ChartType;
-  availableChartTypes: ChartType[];
-}
 
 export class ChartModel {
   public type: ChartType;
