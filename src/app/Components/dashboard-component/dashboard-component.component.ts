@@ -1,26 +1,29 @@
 import {
-  Component, ComponentFactory,
-  ComponentFactoryResolver, ComponentRef,
+  Component,
+  ComponentFactory,
+  ComponentFactoryResolver,
+  ComponentRef,
   ElementRef,
   EventEmitter,
   HostListener,
   Input,
   OnInit,
   Output,
-  ViewChild, ViewContainerRef
+  ViewChild,
+  ViewContainerRef
 } from '@angular/core';
 import {AppStore} from "../../app.store";
-import {ComponentType, ComponentModel} from "../../Models/ComponentModels/Component.model";
+import {ComponentModel, ComponentType} from "../../Models/ComponentModels/Component.model";
 import {FormControl} from "@angular/forms";
 import * as moment from "moment";
 import {Interval} from "../../Models/intervals.model";
-import {Data} from "../../Models/chartData.model";
 import {InputType} from "../../Models/input.model";
 import {ChartType} from "../../Models/chart.model";
 import {ChartSelectorComponent} from "../chart-selector/chart-selector.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ChartComponent} from "../chart/chart.component";
 import {ComponentBuilder} from "../../Models/ComponentModels/ComponentBuilder";
+import {TraderType} from "../../Models/ComponentModels/TraderComponentModels/TraderComponent.model";
 
 @Component({
   selector: 'app-dashboard-component',
@@ -49,6 +52,7 @@ export class DashboardComponentComponent implements OnInit {
 
   //Actual Component stuff ------------------------------------------------------------------
   @Input() componentType: ComponentType;
+  @Input() traderType: TraderType;
   @Output() deleteEvent = new EventEmitter<DashboardComponentComponent>();
   public chosenTicker: string = "aapl";
   public intervalTypes: Interval[] = Interval.getIntervals();
@@ -57,6 +61,7 @@ export class DashboardComponentComponent implements OnInit {
   public currentScale: string = "minute";
   public fromDate: FormControl = new FormControl(moment().subtract(5, 'days').toDate());
   public toDate: FormControl = new FormControl(moment().toDate());
+  public chosenStartBal: number = 1000;
   public componentModel: ComponentModel;
   public inputs: InputType[];
   public store: AppStore;
@@ -70,7 +75,7 @@ export class DashboardComponentComponent implements OnInit {
 
   constructor(store: AppStore, public dialog: MatDialog, private resolver: ComponentFactoryResolver) {
     let compBuilder = new ComponentBuilder(store);
-    this.componentModel = compBuilder.buildComponentModel(this.componentType);
+    this.componentModel = compBuilder.buildComponentModel(this.componentType, this.traderType);
     this.inputs = this.componentModel.getInputs();
     this.store = store
   }
@@ -98,7 +103,7 @@ export class DashboardComponentComponent implements OnInit {
 
   ngOnInit() {
     let compBuilder = new ComponentBuilder(this.store);
-    this.componentModel = compBuilder.buildComponentModel(this.componentType);
+    this.componentModel = compBuilder.buildComponentModel(this.componentType, this.traderType);
     this.inputs = this.componentModel.getInputs();
   }
 
@@ -112,7 +117,7 @@ export class DashboardComponentComponent implements OnInit {
     let fromDate = (moment(this.fromDate.value)).format('YYYY-MM-DD')
     let toDate = (moment(this.toDate.value)).format('YYYY-MM-DD')
     if(this.componentModel){
-      this.componentModel.loadData(this.chosenTicker, this.chosenIntervalType, this.chosenInterval, fromDate, toDate);
+      this.componentModel.loadData(this.chosenTicker, this.chosenIntervalType, this.chosenInterval, fromDate, toDate, this.chosenStartBal);
     }
   }
 

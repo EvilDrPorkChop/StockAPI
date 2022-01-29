@@ -49,6 +49,11 @@
         <mat-datepicker #picker2></mat-datepicker>
       </mat-form-field>
 
+      <mat-form-field *ngIf="inputs.includes(allInputs.startBalance)"  appearance="outline" [style.width.px]="inputWidth">
+        <mat-label style="color: #efefef">Start Balance</mat-label>
+        <input matInput value="1" type="number" [(ngModel)]="chosenStartBal">
+      </mat-form-field>
+
       <button mat-button style="background-color: #2d4250; margin-bottom: 15px;" (click)="getData()" [style.width.px]="inputWidth">Select</button>
     </div>
   </div>

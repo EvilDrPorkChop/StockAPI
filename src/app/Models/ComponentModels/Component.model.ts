@@ -12,11 +12,6 @@ export enum ComponentType{
   pattern
 }
 
-export interface ComponentSelectorData {
-  componentType: ComponentType;
-  allComponentTypes: ComponentType[];
-}
-
 export abstract class ComponentModel {
   public ticker: string = 'aapl';
   public fromDate: string = '';
@@ -62,7 +57,7 @@ export abstract class ComponentModel {
 
   public abstract getAvailableChartTypes(): ChartType[]
 
-  public abstract loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string): void
+  public abstract loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string, startBal? : number): void
 
   public abstract processData(result: any): void
 }

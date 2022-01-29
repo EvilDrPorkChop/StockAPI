@@ -1,10 +1,10 @@
-import {AppStore, TickerData} from "../../app.store";
+import {AppStore, TickerData} from "../../../app.store";
 import {filter} from "rxjs";
-import {InputType} from "../input.model";
-import {ChartType} from "../chart.model";
-import {Interval} from "../intervals.model";
-import {Data, DataSet} from "../chartData.model";
-import {ComponentModel, ComponentType} from "./Component.model";
+import {InputType} from "../../input.model";
+import {ChartType} from "../../chart.model";
+import {Interval} from "../../intervals.model";
+import {Data, DataSet} from "../../chartData.model";
+import {ComponentModel, ComponentType} from "../Component.model";
 
 export class TickerDataComponent extends ComponentModel{
 

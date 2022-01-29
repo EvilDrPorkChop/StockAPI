@@ -1,6 +1,5 @@
 import {
   Component,
-  ComponentFactory,
   ComponentFactoryResolver,
   ComponentRef,
   ViewChild,
@@ -11,7 +10,11 @@ import 'chartjs-adapter-moment';
 import {ComponentType} from "./Models/ComponentModels/Component.model";
 import {DashboardComponentComponent} from "./Components/dashboard-component/dashboard-component.component";
 import {MatDialog} from "@angular/material/dialog";
-import {ComponentSelectorComponent} from "./Components/component-selector/component-selector.component";
+import {
+  ComponentSelectorComponent,
+  ComponentSelectorData
+} from "./Components/component-selector/component-selector.component";
+import {TraderType} from "./Models/ComponentModels/TraderComponentModels/TraderComponent.model";
 
 Chart.register(LinearScale, Title);
 
@@ -32,41 +35,43 @@ export class AppComponent {
     this.keys = Object.keys(this.componentTypes).filter(f => !isNaN(Number(f)));
   }
 
-  public addComponent(componentType: ComponentType){
+  public addComponent(selectorData: ComponentSelectorData){
     this.componentRef = this.container.createComponent(DashboardComponentComponent);
-    this.componentRef.instance.componentType = componentType;
+    this.componentRef.instance.componentType = selectorData.componentType;
+    this.componentRef.instance.traderType = selectorData.traderType;
     this.components.push(this.componentRef.instance)
+    console.log("Adding component type: "+ComponentType[selectorData.componentType]+" and trader type: "+ TraderType[selectorData.traderType])
     this.componentRef.instance.deleteEvent.subscribe((result: DashboardComponentComponent) => this.deleteHandler(result))
   }
 
   public deleteHandler(component: DashboardComponentComponent){
     const componentIndex = this.components.indexOf(component);
-    let index = 0
     if(componentIndex !== -1){
       this.container.remove(componentIndex);
       this.components.splice(componentIndex, 1);
     }
-
   }
 
   ngOnDestroy() {
     this.componentRef.destroy();
   }
-  
+
   ngAfterViewInit() {
-    this.addComponent(ComponentType.ticker);
   }
 
   public openSelector(){
     const dialogRef = this.dialog.open(ComponentSelectorComponent, {
       width: '250px',
-      data: {allComponentTypes: this.getComponentTypes(), componentType: ComponentType.ticker},
+      data: {allComponentTypes: this.getComponentTypes(), componentType: ComponentType.ticker, allTraderTypes: this.getTraderTypes(), traderType: TraderType.macd, isCancelled: false},
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.addComponent(result);
+      let data : ComponentSelectorData = result;
+      if(!data.isCancelled){
+        this.addComponent(data);
+      }
       console.log('The dialog was closed');
-      console.log(result);
+      console.log(data);
     });
   }
 
@@ -75,6 +80,15 @@ export class AppComponent {
     types.push(ComponentType.ticker);
     types.push(ComponentType.pattern);
     types.push(ComponentType.trader);
+    return types;
+  }
+
+  public getTraderTypes(){
+    let types : TraderType[] = []
+    types.push(TraderType.macd);
+    types.push(TraderType.peak);
+    types.push(TraderType.swing);
+    types.push(TraderType.time);
     return types;
   }
 }

@@ -8,8 +8,20 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
+
+  <div *ngIf="data.componentType == componentTypes.trader">
+    <p>Trader Type</p>
+      <mat-form-field appearance="outline" style="color: #efefef">
+        <mat-select [(ngModel)]="data.traderType" style="color: #efefef">
+          <mat-option *ngFor="let type of data.allTraderTypes" [value]="type">
+            {{traderTypes[type]}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  </div>
+
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">Cancel</button>
-  <button mat-button [mat-dialog-close]="data.componentType" cdkFocusInitial>Ok</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
 </div>

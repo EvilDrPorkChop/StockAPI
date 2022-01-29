@@ -11,10 +11,7 @@ import {MatInputModule} from "@angular/material/input";
 import {MatButtonModule} from "@angular/material/button";
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {A11yModule} from "@angular/cdk/a11y";
-import { TickerDataComponent } from './ticker-data/ticker-data.component';
 import {MatExpansionModule} from "@angular/material/expansion";
-import { TraderDataComponent } from './trader-data/trader-data.component';
-import { PatternDataComponent } from './pattern-data/pattern-data.component';
 import {MatDatepickerModule} from "@angular/material/datepicker";
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -29,9 +26,6 @@ import { ComponentSelectorComponent } from './Components/component-selector/comp
 @NgModule({
   declarations: [
     AppComponent,
-    TickerDataComponent,
-    TraderDataComponent,
-    PatternDataComponent,
     ChartComponent,
     DashboardComponentComponent,
     ChartSelectorComponent,

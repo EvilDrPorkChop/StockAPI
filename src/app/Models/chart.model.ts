@@ -5,7 +5,9 @@ export enum ChartType{
   price,
   volume,
   pattern,
-  value
+  value,
+  shares,
+  macd
 }
 
 export interface ChartSelectorData {
@@ -14,7 +16,7 @@ export interface ChartSelectorData {
 }
 
 export class ChartModel{
-  public type: ChartType = ChartType.price;
+  public type: ChartType;
 
   constructor(type: ChartType) {
     this.type = type;
