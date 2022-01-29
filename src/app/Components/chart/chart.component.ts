@@ -43,9 +43,7 @@ export class ChartComponent implements OnInit {
   public visible = true;
   public showPoints = false;
   public chartWidth = 100;
-
   public chartHeight = 80;
-  public scaleHeight = 20;
   constructor(private changeDetector: ChangeDetectorRef) {
 
   }

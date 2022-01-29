@@ -22,9 +22,10 @@ def runMacdTrader(dataInput, startBal):
   long = LongInvestor.Trader(dataInput, startBal)
   trad.Run()
   long.Run()
+  macds, signals = Trader.calcMACD(trad.env.Data['open'].tolist())
   response = jsonify(states=[state.serialize() for state in trad.env.States], opens=trad.env.Data['open'].tolist(),
                      longs=[state.serialize() for state in long.env.States],
-                     dates=trad.env.Data['timestamp'].tolist())
+                     dates=trad.env.Data['timestamp'].tolist(), macd=macds, signals=signals)
   response.headers.add("Access-Control-Allow-Origin", "*")
   return response
 
