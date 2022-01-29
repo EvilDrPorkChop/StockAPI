@@ -47,6 +47,13 @@ def SubmitQtyOrder(api, symbol, qtyStr, sideStr, orderTypeStr="market", TIF="day
     GetOrderByClientID(api, order.client_order_id)
 
 
+def SubmitNotionalOrder(api, symbol, notionalStr, sideStr, orderTypeStr="market", TIF="day", limitPrice=None, stopPrice=None):
+    print("Submitting the order")
+    order = api.submit_order(symbol, notional=notionalStr, side=sideStr, type=orderTypeStr, time_in_force=TIF, limit_price=limitPrice, stop_price=stopPrice,
+                             client_order_id=None, order_class=None, take_profit=None, stop_loss=None, trail_price=None, trail_percent=None)
+    print("Order ID: " + order.client_order_id +
+          " submitted. Checking status.")
+    GetOrderByClientID(api, order.client_order_id)
 # api = tradeapi.REST(key_id=config.ALPACA_API_KEY, secret_key=config.ALPACA_SECRET_KEY,
 #                     base_url=config.BASE_URL, api_version='v2')
 # SubmitQtyOrder(api, 'AAPL', '1', 'buy')
