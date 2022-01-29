@@ -1,7 +1,7 @@
 import {
   Component,
   ComponentFactoryResolver,
-  ComponentRef,
+  ComponentRef, ElementRef,
   ViewChild,
   ViewContainerRef
 } from '@angular/core';

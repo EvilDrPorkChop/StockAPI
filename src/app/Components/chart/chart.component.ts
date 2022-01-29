@@ -13,6 +13,7 @@ import {
 import {ChartModel, ChartType} from "../../Models/ChartModels/Chart.model";
 import {Data} from "../../Models/Shared/chartData.model";
 import {ChartBuilder} from "../../Models/ChartModels/ChartBuilder";
+import {Observable, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-chart',
@@ -25,6 +26,7 @@ export class ChartComponent implements OnInit {
   @Input() chartType: ChartType = ChartType.price;
   @Input() data: Data;
   @Output() deleteEvent = new EventEmitter<ChartComponent>();
+
   public chartModel: ChartModel;
   public currentScale: string = "day";
   public minWidth = 323;
@@ -34,16 +36,27 @@ export class ChartComponent implements OnInit {
   public height: number = this.minHeight;
   public left: number = 100;
   public top: number = 100;
+
   @ViewChild("box") public box: ElementRef;
-  private boxPosition: { left: number, top: number };
+  @Input() outerContainer: ElementRef;
+  @Input() outerContainerHeight: number;
+  @Input() outerContainerWidth: number;
+
+  @Input() outerContainerEvent: Observable<number[]>;
+  outerContainerEventSubscription: Subscription;
+
+  private boxPosition: { left: number, top: number};
   private containerPos: { left: number, top: number, right: number, bottom: number };
   public mouse: {x: number, y: number}
   public resizing: boolean = false;
+  public moving: boolean = false;
   private mouseClick: {x: number, y: number, left: number, top: number}
+
   public visible = true;
   public showPoints = false;
   public chartWidth = 100;
   public chartHeight = 80;
+
   constructor(private changeDetector: ChangeDetectorRef) {
 
   }
@@ -54,6 +67,11 @@ export class ChartComponent implements OnInit {
     if(!this.chartModel.showScale()){
       this.chartHeight = 100;
     }
+    //Update our version of our parents width and height when the parent emits that it has changed
+    this.outerContainerEventSubscription = this.outerContainerEvent.subscribe(data => {
+      this.outerContainerHeight = data[0];
+      this.outerContainerWidth = data[1];
+    })
   }
 
   ngAfterViewInit(){
@@ -71,10 +89,9 @@ export class ChartComponent implements OnInit {
   }
 
   private loadContainer(){
-    const left = this.boxPosition.left - this.left;
-    const top = this.boxPosition.top - this.top;
-    const right = left + 323;
-    const bottom = top + 450;
+    const{left, top} = this.outerContainer.nativeElement.getBoundingClientRect();
+    const right = left + this.outerContainerWidth;
+    const bottom = top + this.outerContainerHeight;
     this.containerPos = { left, top, right, bottom };
   }
 
@@ -82,10 +99,18 @@ export class ChartComponent implements OnInit {
     this.resizing = !this.resizing;
   }
 
-  setStatus(event: MouseEvent, status: boolean){
+  setResizeStatus(event: MouseEvent, status: boolean){
     if(status) event.stopPropagation();
     else this.loadBox();
+    this.loadContainer();
     this.resizing = status;
+  }
+
+  setMoveStatus(event: MouseEvent, status: boolean){
+    if(status) this.mouseClick = { x: event.clientX, y: event.clientY, left: this.left, top: this.top };
+    else this.loadBox();
+    this.loadContainer();
+    this.moving = status;
   }
 
   updateData(data: Data){
@@ -151,17 +176,44 @@ export class ChartComponent implements OnInit {
   onMouseMove(event: MouseEvent){
     this.mouse = { x: event.clientX, y: event.clientY };
     if(this.resizing) this.resize();
+    else if(this.moving) this.move();
+  }
+
+  private move(){
+    console.log("moving")
+    if(this.moveCondMeet()){
+      this.left = this.mouseClick.left + (this.mouse.x - this.mouseClick.x);
+      this.top = this.mouseClick.top + (this.mouse.y - this.mouseClick.y);
+    }
   }
 
   private resize(){
-    this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
-    this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
-    if(this.width < this.minWidth){
-      this.width = this.minWidth;
+    if(this.resizeCondMeet()) {
+      this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
+      this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
+      if (this.width < this.minWidth) {
+        this.width = this.minWidth;
+      }
+      if (this.height < this.minHeight) {
+        this.height = this.minHeight;
+      }
     }
-    if(this.height < this.minHeight){
-      this.height = this.minHeight;
-    }
+  }
+  private resizeCondMeet(){
+    return (this.mouse.x < this.containerPos.right && this.mouse.y < this.containerPos.bottom-100);
+  }
+
+  private moveCondMeet(){
+    const offsetLeft = this.mouseClick.x - this.boxPosition.left;
+    const offsetRight = this.width - offsetLeft;
+    const offsetTop = this.mouseClick.y - this.boxPosition.top;
+    const offsetBottom = this.height - offsetTop;
+    return (
+      this.mouse.x > this.containerPos.left + offsetLeft &&
+      this.mouse.x < this.containerPos.right - offsetRight &&
+      this.mouse.y > this.containerPos.top + offsetTop &&
+      this.mouse.y < this.containerPos.bottom - offsetBottom - 100
+    );
   }
 
 }

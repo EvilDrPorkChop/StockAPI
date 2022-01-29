@@ -2,6 +2,7 @@
   outline-style: solid;
   border-radius: 10px;
   outline-color: #262626;
+  flex-direction: row;
   &.active {
     outline: dashed #262626;
     transform: translateY(-0.25rem);

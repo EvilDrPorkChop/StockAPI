@@ -24,6 +24,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {ChartComponent} from "../chart/chart.component";
 import {ComponentBuilder} from "../../Models/ComponentModels/ComponentBuilder";
 import {TraderType} from "../../Models/ComponentModels/TraderComponentModels/TraderComponent.model";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-dashboard-component',
@@ -35,9 +36,10 @@ export class DashboardComponentComponent implements OnInit {
 
   //Stuff For Resizing ----------------------------------------------------------------------
   public minWidth = 800;
-  public minHeight = 110;
+  public minHeight = 120;
   public width: number = this.minWidth;
-  public height: number = this.minHeight;
+  public height: number = 500;
+  public previousHeight = this.height;
   public left: number = 100;
   public top: number = 100;
   @ViewChild("box") public box: ElementRef;
@@ -47,6 +49,7 @@ export class DashboardComponentComponent implements OnInit {
   public status: number = 0;
   private mouseClick: {x: number, y: number, left: number, top: number}
   public visible = true;
+  public sizeChangedSubject: Subject<number[]> = new Subject<number[]>();
   //-----------------------------------------------------------------------------------------
 
 
@@ -69,6 +72,7 @@ export class DashboardComponentComponent implements OnInit {
   //-----------------------------------------------------------------------------------------
 
   @ViewChild("container", { read: ViewContainerRef }) container: ViewContainerRef;
+  @ViewChild("container") public boundingBox: ElementRef;
   public componentRef: ComponentRef<ChartComponent>;
   public components: ChartComponent[] = []
 
@@ -81,10 +85,13 @@ export class DashboardComponentComponent implements OnInit {
   }
 
   public addComponent(chartType: ChartType){
-    const factory: ComponentFactory<ChartComponent> = this.resolver.resolveComponentFactory(ChartComponent);
-    this.componentRef = this.container.createComponent(factory);
+    this.componentRef = this.container.createComponent(ChartComponent);
     this.componentRef.instance.chartType = chartType;
     this.componentRef.instance.data = this.componentModel.getData(0);
+    this.componentRef.instance.outerContainer = this.boundingBox;
+    this.componentRef.instance.outerContainerHeight = this.getHeight();
+    this.componentRef.instance.outerContainerWidth = this.getWidth();
+    this.componentRef.instance.outerContainerEvent = this.sizeChangedSubject.asObservable();
     this.components.push(this.componentRef.instance)
     this.componentModel.charts = this.components;
     this.componentRef.instance.deleteEvent.subscribe((result: ChartComponent) => this.deleteHandler(result))
@@ -121,6 +128,14 @@ export class DashboardComponentComponent implements OnInit {
     }
   }
 
+  public getWidth(){
+    return this.width;
+  }
+
+  public getHeight(){
+    return this.height;
+  }
+
   public get inputWidth(){
     return this.width/(this.inputs.length + 1);
   }
@@ -133,16 +148,11 @@ export class DashboardComponentComponent implements OnInit {
       this.visible = !this.visible;
     }
     if(!this.visible){
+      this.previousHeight = this.height;
       this.height = 50;
-      for(let chart of this.components){
-        chart.toggleVisibility(false);
-      }
     }
     else{
-      this.height = this.minHeight;
-      for(let chart of this.components){
-        chart.toggleVisibility(true);
-      }
+      this.height = this.previousHeight;
     }
   }
 
@@ -186,7 +196,10 @@ export class DashboardComponentComponent implements OnInit {
 
   setStatus(event: MouseEvent, status: number){
     if(status === 1) event.stopPropagation();
-    else this.loadBox();
+    else {
+      this.loadBox();
+      this.sizeChangedSubject.next([this.height, this.width])
+    }
     this.status = status;
   }
 
@@ -198,10 +211,14 @@ export class DashboardComponentComponent implements OnInit {
   }
 
   private resize(){
-      this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
-      if(this.width < this.minWidth){
-        this.width = this.minWidth;
-      }
+    this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
+    this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
+    if(this.width < this.minWidth){
+      this.width = this.minWidth;
+    }
+    if(this.height < this.minHeight){
+      this.height = this.minHeight;
+    }
   }
   //-------------------------------------------------------------------------------------------------------------------
 }

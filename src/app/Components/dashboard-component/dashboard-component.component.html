@@ -3,6 +3,7 @@
      [style.height.px]="height"
      [style.transform]="'translate3d('+ left + 'px,' + top + 'px,' + '0px)'"
      [class.active]="status === 1"
+     style="overflow:{{visible?'visible':'hidden'}}"
      (window:mouseup)="setStatus($event, 0)"
      cdkDrag
 >
@@ -61,5 +62,5 @@
 
   </div>
 
-  <div class="resize-action" (mousedown)="setStatus($event, 1)"></div>
+  <div *ngIf="visible" class="resize-action" (mousedown)="setStatus($event, 1)"></div>
 </div>
