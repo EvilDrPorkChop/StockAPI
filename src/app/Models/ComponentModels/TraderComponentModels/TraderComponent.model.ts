@@ -1,9 +1,9 @@
 import {AppStore, StateData, TickerData} from "../../../app.store";
 import {filter} from "rxjs";
-import {InputType} from "../../input.model";
-import {ChartType} from "../../chart.model";
-import {Interval} from "../../intervals.model";
-import {Data, DataSet} from "../../chartData.model";
+import {InputType} from "../../Shared/input.model";
+import {ChartType} from "../../ChartModels/Chart.model";
+import {Interval} from "../../Shared/intervals.model";
+import {Data, DataSet} from "../../Shared/chartData.model";
 import {ComponentModel, ComponentType} from "../Component.model";
 
 export enum TraderType{

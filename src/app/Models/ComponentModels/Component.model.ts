@@ -1,9 +1,9 @@
-import {ChartType} from "../chart.model";
+import {ChartType} from "../ChartModels/Chart.model";
 import {AppStore, PatternData, TickerData} from "../../app.store";
 import {filter, Subscription} from "rxjs";
-import {Data, DataSet} from "../chartData.model";
-import {InputType} from "../input.model";
-import {Interval} from "../intervals.model";
+import {Data, DataSet} from "../Shared/chartData.model";
+import {InputType} from "../Shared/input.model";
+import {Interval} from "../Shared/intervals.model";
 import {ChartComponent} from "../../Components/chart/chart.component";
 
 export enum ComponentType{

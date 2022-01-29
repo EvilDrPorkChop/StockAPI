@@ -1,8 +1,8 @@
 import {TraderComponent, TraderType} from "./TraderComponent.model";
 import {AppStore, StateData} from "../../../app.store";
-import {InputType} from "../../input.model";
-import {Data, DataSet} from "../../chartData.model";
-import {ChartType} from "../../chart.model";
+import {InputType} from "../../Shared/input.model";
+import {Data, DataSet} from "../../Shared/chartData.model";
+import {ChartType} from "../../ChartModels/Chart.model";
 
 export class MacdTraderComponent extends TraderComponent{
   constructor(store: AppStore) {

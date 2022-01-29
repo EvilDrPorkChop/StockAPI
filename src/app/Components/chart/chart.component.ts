@@ -10,8 +10,9 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import {ChartModel, ChartType} from "../../Models/chart.model";
-import {Data} from "../../Models/chartData.model";
+import {ChartModel, ChartType} from "../../Models/ChartModels/Chart.model";
+import {Data} from "../../Models/Shared/chartData.model";
+import {ChartBuilder} from "../../Models/ChartModels/ChartBuilder";
 
 @Component({
   selector: 'app-chart',
@@ -42,12 +43,19 @@ export class ChartComponent implements OnInit {
   public visible = true;
   public showPoints = false;
   public chartWidth = 100;
+
+  public chartHeight = 80;
+  public scaleHeight = 20;
   constructor(private changeDetector: ChangeDetectorRef) {
 
   }
 
   ngOnInit(): void {
-    this.chartModel = new ChartModel(this.chartType)
+    let chartBuilder = new ChartBuilder()
+    this.chartModel = chartBuilder.buildChartModel(this.chartType);
+    if(!this.chartModel.showScale()){
+      this.chartHeight = 100;
+    }
   }
 
   ngAfterViewInit(){

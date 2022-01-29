@@ -16,7 +16,7 @@
   </div>
 
   <div [hidden]="!visible" style="height: 90%; width: 100%; padding: 5px">
-    <a class="chart-card" style="width: 100%; height: 80%">
+    <a class="chart-card" style="width: 100%;" [style.height.%]="chartHeight">
       <div class="myChartWrapper" style="height: 100%">
         <div class="myChart" (wheel)="onZoom($event)" [style.width.%]="this.chartWidth" style="height: 95%">
           <canvas #chart baseChart
