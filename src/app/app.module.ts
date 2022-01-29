@@ -19,6 +19,12 @@ import {MatDatepickerModule} from "@angular/material/datepicker";
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { ChartComponent } from './Components/chart/chart.component';
+import { DashboardComponentComponent } from './Components/dashboard-component/dashboard-component.component';
+import {DragDropModule} from "@angular/cdk/drag-drop";
+import { ChartSelectorComponent } from './Components/chart-selector/chart-selector.component';
+import {MatDialogModule} from "@angular/material/dialog";
+import { ComponentSelectorComponent } from './Components/component-selector/component-selector.component';
 
 @NgModule({
   declarations: [
@@ -26,26 +32,32 @@ import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
     TickerDataComponent,
     TraderDataComponent,
     PatternDataComponent,
+    ChartComponent,
+    DashboardComponentComponent,
+    ChartSelectorComponent,
+    ComponentSelectorComponent,
   ],
-    imports: [
-        MatButtonModule,
-        FormsModule,
-        HttpClientModule,
-        BrowserModule,
-        BrowserAnimationsModule,
-        NgChartsModule,
-        MatSelectModule,
-        MatInputModule,
-        MatButtonToggleModule,
-        A11yModule,
-        MatExpansionModule,
-        MatDatepickerModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatNativeDateModule,
-        MatRippleModule,
-        ReactiveFormsModule
-    ],
+  imports: [
+    MatButtonModule,
+    FormsModule,
+    HttpClientModule,
+    BrowserModule,
+    BrowserAnimationsModule,
+    NgChartsModule,
+    MatSelectModule,
+    MatInputModule,
+    MatButtonToggleModule,
+    A11yModule,
+    MatExpansionModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatNativeDateModule,
+    MatRippleModule,
+    ReactiveFormsModule,
+    DragDropModule,
+    MatDialogModule
+  ],
   providers: [AppStore],
   bootstrap: [AppComponent]
 })

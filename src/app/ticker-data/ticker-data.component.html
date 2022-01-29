@@ -1,6 +1,7 @@
 <div class="card-container-large">
   <div class="card-container">
-    <div class="card" style="width: 100%; margin-top: 1em">
+    <div class="card" style="width: 100%; margin-top: 1em" cdkDrag>
+      <div cdkDragHandle>Drag From Here</div>
       <mat-form-field appearance="outline" style="margin: 1em">
         <mat-label style="color: #efefef">Ticker</mat-label>
         <input matInput [(ngModel)]="chosenTicker" style="color: #efefef">

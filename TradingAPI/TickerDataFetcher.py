@@ -4,12 +4,12 @@ from alpaca_trade_api.rest import REST, TimeFrame, TimeFrameUnit
 import config
 class TickerDataFetcher:
 
-  def __init__(self, ticker, interval, intervalType, fromDate, toDate):
-    self.ticker = ticker
-    self.interval = interval
-    self.intervalType = intervalType
-    self.fromDate = fromDate
-    self.toDate = toDate
+  def __init__(self, dataInput):
+    self.ticker = dataInput.ticker
+    self.interval = dataInput.interval
+    self.intervalType = dataInput.intervalType
+    self.fromDate = dataInput.fromDate
+    self.toDate = dataInput.toDate
 
   def LoadData(self):
     if self.intervalType == "day":

@@ -1,0 +1,60 @@
+<div #box class="resizable-draggable"
+     [style.width.px]="width"
+     [style.height.px]="height"
+     [style.transform]="'translate3d('+ left + 'px,' + top + 'px,' + '0px)'"
+     [class.active]="status === 1"
+     (window:mouseup)="setStatus($event, 0)"
+     cdkDrag
+>
+
+  <div class="mover" style="background-color: #262626; margin-bottom: 30px" cdkDragHandle>
+    <i class="material-icons point"  style="color: #9f9f9f" (click)="deleteMyself()">close</i>
+    <i *ngIf="visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility</i>
+    <i *ngIf="!visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility_off</i>
+    <a style="color: #9f9f9f; margin-left: 50px; margin-bottom: 20px">{{this.componentModel.getTitle()}}</a>
+    <i class="material-icons float-end point" style="color: #9f9f9f" (click)="openSelector()">add</i>
+  </div>
+
+  <div class="card-container" [hidden]="!this.visible">
+    <div class="card" style="width: 100%">
+      <mat-form-field *ngIf="inputs.includes(allInputs.ticker)" appearance="outline" [style.width.px]="inputWidth">
+        <mat-label style="color: #efefef">Ticker</mat-label>
+        <input matInput [(ngModel)]="chosenTicker" style="color: #efefef">
+      </mat-form-field>
+
+      <mat-form-field *ngIf="inputs.includes(allInputs.interval)"  appearance="outline" [style.width.px]="inputWidth">
+        <mat-label style="color: #efefef">Interval</mat-label>
+        <input matInput value="1" type="number" [(ngModel)]="chosenInterval">
+      </mat-form-field>
+
+      <mat-form-field *ngIf="inputs.includes(allInputs.intervalType)" appearance="outline" style="color: #efefef" [color]="'accent'" [style.width.px]="inputWidth">
+        <mat-select [(value)]="chosenIntervalType" style="color: #efefef">
+          <mat-option *ngFor="let interval of intervalTypes" [value]="interval" >
+            {{interval.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="inputs.includes(allInputs.fromDate)" appearance="outline" [color]="'accent'" [style.width.px]="inputWidth">
+        <mat-label style="color: #efefef">From Date</mat-label>
+        <input matInput [matDatepicker]="picker" [formControl]="fromDate">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="inputs.includes(allInputs.toDate)" appearance="outline" [color]="'accent'" [style.width.px]="inputWidth">
+        <mat-label style="color: #efefef">To Date</mat-label>
+        <input matInput [matDatepicker]="picker2" [formControl]="toDate">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-button style="background-color: #2d4250; margin-bottom: 15px;" (click)="getData()" [style.width.px]="inputWidth">Select</button>
+    </div>
+  </div>
+  <div #container style="background-color: #adadad">
+
+  </div>
+
+  <div class="resize-action" (mousedown)="setStatus($event, 1)"></div>
+</div>

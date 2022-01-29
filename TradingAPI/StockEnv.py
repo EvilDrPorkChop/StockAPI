@@ -44,27 +44,27 @@ class State:
 
 class StockEnv:
 
-  def __init__(self, ticker, startBal, period, interval):
-    self.ticker = ticker
+  def __init__(self, dataInput, startBal):
     self.dateString = 'Date'
     self.startbal = int(startBal)
-    self.period = period
-    self.interval = interval
     self.Finished = False
     self.TimeStep = 0
     self.Shares = []
-    data = TickerDataFetcher(ticker, interval, period).LoadData()
+    self.movingAverage = []
+    data = TickerDataFetcher(dataInput).LoadData()
     self.Data = data
-    firstrow = self.Data.iloc[0]
 
+    self.Data['MA'] = ""
+    self.Data = self.Data.reset_index()
+    firstrow = self.Data.iloc[0]
     if 'Date' in self.Data:
       self.dateString = 'Date'
     elif 'Datetime' in self.Data:
       self.dateString = 'Datetime'
     else:
-      self.dateString = 'index'
+      self.dateString = 'timestamp'
 
-    self.State = State(firstrow[self.dateString], firstrow['Open'], firstrow['Volume'], 0, startBal)
+    self.State = State(firstrow[self.dateString], firstrow['open'], firstrow['volume'], 0, startBal)
     self.States = []
 
   def LoadData(self):
@@ -76,14 +76,14 @@ class StockEnv:
   def AdvanceTime(self):
     self.State.calcValue()
     self.States.append(copy.deepcopy(self.State))
-
+    self.calcMA(20)
     self.TimeStep += 1
 
     if self.TimeStep >= len(self.Data.index) - 1:
       self.Finished = True
     else:
       row = self.Data.iloc[self.TimeStep]
-      self.State = State(date=(row[self.dateString]), price=(row['Open']), volume=(row['Volume']),
+      self.State = State(date=(row[self.dateString]), price=(row['open']), volume=(row['volume']),
                          shares=self.State.Shares, balance=self.State.Balance)
 
   def Buy(self, number):
@@ -116,3 +116,17 @@ class StockEnv:
         self.State.Shares -= 1
         self.State.Action = "Sell"
         self.Shares.remove(shares[0])
+
+
+  def calcMA(self, n):
+    if self.TimeStep == 0:
+      self.Data.at[self.TimeStep, 'MA'] = self.Data['open'].iloc[0]
+    else:
+      startIndex = self.TimeStep-n
+      if startIndex < 0:
+        startIndex = 0
+        n = self.TimeStep
+      total = 0
+      for i in range(startIndex, self.TimeStep):
+        total += self.Data['open'].iloc[self.TimeStep]
+      self.Data.at[self.TimeStep, 'MA'] = float(total/n)

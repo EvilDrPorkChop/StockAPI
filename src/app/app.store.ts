@@ -20,10 +20,11 @@ export class AppStore {
       console.log(data);
       let response = new TickerData();
       response.opens = data.opens;
-      //response.highs = data.highs;
       response.dates = data.dates;
-      //response.ticker = data.ticker;
       response.volumes = data.volumes;
+      response.ticker = ticker;
+      response.fromDate = fromDate;
+      response.toDate = toDate;
       this.tickerDataObserver.next(response)
     })
   }
@@ -41,7 +42,9 @@ export class AppStore {
   public getPatternData(ticker:string, fromDate: string, toDate: string){
     let url = "http://localhost:701/checkForDailyPatterns?ticker="+ticker+"&fromDate="+fromDate+"&toDate="+toDate+"&startBalance=";
     this.http.get<any>(url).subscribe((data) => {
-      console.log(data);
+      data.fromDate = fromDate;
+      data.toDate = toDate;
+      data.ticker = ticker;
       this.patternDataObserver.next(data);
     })
   }
@@ -57,6 +60,8 @@ export class TickerData{
   public volumes: number[] = [];
   public dates: any[] = [];
   public ticker: string = "";
+  public fromDate: string= "";
+  public toDate: string= "";
 }
 
 export class StateData{
@@ -85,4 +90,7 @@ export class PatternData{
   public minmaxs: number[] = []
   public dates: any[] = []
   public average: number = 0
+  public ticker:string = "";
+  public fromDate: string= "";
+  public toDate: string = "";
 }

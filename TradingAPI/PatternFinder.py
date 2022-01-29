@@ -3,6 +3,7 @@ import pandas as pd
 from pandas_datareader import data as pdr
 from numpy import datetime64
 
+from DataInput import DataInput
 from TickerDataFetcher import TickerDataFetcher
 
 
@@ -76,7 +77,8 @@ class PatternFinder:
 
   def __init__(self, ticker, fromDate, toDate):
     self.ticker = ticker
-    self.data = TickerDataFetcher(ticker, 1, 'hour', fromDate, toDate).LoadData()
+    dataInput = DataInput(ticker, 1, 'hour', fromDate, toDate)
+    self.data = TickerDataFetcher(dataInput).LoadData()
     self.data = self.data.reset_index()
     if 'Date' in self.data:
       self.dateString = 'Date'
