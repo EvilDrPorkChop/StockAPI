@@ -29,9 +29,13 @@ export class AppStore {
     })
   }
 
-  public startRun(trader: string, ticker:string, intervalType:string, interval:number, fromDate: string, toDate: string, startBalance: number){
+  public startRun(trader: string, ticker:string, intervalType:string, interval:number, fromDate: string, toDate: string, startBalance: number, threshold?: number){
     let url = "http://localhost:701/startRun?&ticker="+ticker+"&interval="+interval+"&intervalType="
       +intervalType+"&fromDate="+fromDate+"&toDate="+toDate+"&startBalance="+startBalance+"&trader="+trader;
+
+    if(threshold != undefined){
+      url = url + "&threshold="+threshold;
+    }
 
     this.http.get<any>(url).subscribe((data) => {
       data.fromDate = fromDate;
@@ -76,6 +80,10 @@ export class StateData{
   public ticker: string = "";
   public fromDate: string= "";
   public toDate: string= "";
+  public isPeaks: boolean[] = [];
+  public isDips: boolean[] = [];
+  public ma: number[] = [];
+  public gradient: number[] = [];
 }
 
 export class State{

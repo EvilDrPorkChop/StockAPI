@@ -37,11 +37,11 @@ export abstract class TraderComponent extends ComponentModel{
     });
   }
 
-  public loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string, startBal: number): void{
+  public loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string, startBal: number, threshold?: number): void{
     this.ticker = ticker;
     this.fromDate = fromDate;
     this.toDate = toDate;
-    this.store.startRun(TraderType[this.traderType], ticker, intervalType.key, interval, fromDate, toDate, startBal);
+    this.store.startRun(TraderType[this.traderType], ticker, intervalType.key, interval, fromDate, toDate, startBal, threshold);
   }
 
 

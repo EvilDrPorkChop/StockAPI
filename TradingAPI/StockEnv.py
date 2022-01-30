@@ -55,6 +55,7 @@ class StockEnv:
     self.Data = data
 
     self.Data['MA'] = ""
+    self.Data['MAGradient'] = ""
     self.Data = self.Data.reset_index()
     firstrow = self.Data.iloc[0]
     if 'Date' in self.Data:
@@ -66,6 +67,7 @@ class StockEnv:
 
     self.State = State(firstrow[self.dateString], firstrow['open'], firstrow['volume'], 0, startBal)
     self.States = []
+    self.calcMA(20)
 
   def LoadData(self):
     ftse = yf.Ticker(self.ticker)
@@ -76,7 +78,6 @@ class StockEnv:
   def AdvanceTime(self):
     self.State.calcValue()
     self.States.append(copy.deepcopy(self.State))
-    self.calcMA(20)
     self.TimeStep += 1
 
     if self.TimeStep >= len(self.Data.index) - 1:
@@ -85,6 +86,7 @@ class StockEnv:
       row = self.Data.iloc[self.TimeStep]
       self.State = State(date=(row[self.dateString]), price=(row['open']), volume=(row['volume']),
                          shares=self.State.Shares, balance=self.State.Balance)
+    self.calcMA(20)
 
   def Buy(self, number):
     if self.State.Balance - self.State.Price < 0:
@@ -120,6 +122,7 @@ class StockEnv:
   def calcMA(self, n):
     if self.TimeStep == 0:
       self.Data.at[self.TimeStep, 'MA'] = self.Data['open'].iloc[0]
+      self.Data.at[self.TimeStep, 'MAGradient'] = 0
     else:
       startIndex = self.TimeStep - n
       if startIndex < 0:
@@ -127,5 +130,7 @@ class StockEnv:
         n = self.TimeStep
       total = 0
       for i in range(startIndex, self.TimeStep):
-        total += self.Data['open'].iloc[self.TimeStep]
+        total += self.Data['open'].iloc[i]
       self.Data.at[self.TimeStep, 'MA'] = float(total / n)
+      lastMa = self.Data['MA'].iloc[self.TimeStep-1]
+      self.Data.at[self.TimeStep, 'MAGradient'] = float(total/n) - lastMa

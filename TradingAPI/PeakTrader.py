@@ -13,14 +13,34 @@ def getAverage(prices):
 
 class Trader:
 
-  def __init__(self, dataInput, startBal):
+  def __init__(self, dataInput, startBal, threshold):
     self.lastboughtAt = float(0)
     self.env = StockEnv.StockEnv(dataInput, startBal)
     self.prices = []
+    self.isPeaks = []
+    self.isDips = []
+    self.threshold = float(threshold)
     self.decided = 'Hold'
 
   def decide(self, state):
     self.prices.append(state.Price)
+    if self.env.TimeStep > 1:
+      thisGradient = self.env.Data['MAGradient'].iloc[self.env.TimeStep]
+      lastGradient = self.env.Data['MAGradient'].iloc[self.env.TimeStep-1]
+      if thisGradient-lastGradient > self.threshold:
+        self.isPeaks.append(True)
+        self.isDips.append(False)
+        self.tryToBuy(state, 'Hold')
+      elif lastGradient-thisGradient > self.threshold:
+        self.isPeaks.append(False)
+        self.isDips.append(True)
+        self.tryToSell(state, 'Hold')
+      else:
+        self.isPeaks.append(False)
+        self.isDips.append(False)
+    else:
+      self.isPeaks.append(False)
+      self.isDips.append(False)
     self.env.AdvanceTime()
 
   def tryToSell(self, state, decisionIfCant):

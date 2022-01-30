@@ -142,7 +142,7 @@ export class ChartComponent implements OnInit {
 
   updateData(data: Data){
     this.data = data;
-    this.changeDataPointVisibility(this.showPoints);
+    //this.changeDataPointVisibility(this.showPoints);
     this.chartModel.numOfDatasets = this.data.datasets.length
     this.changeDetector.detectChanges();
   }

@@ -6,7 +6,8 @@ export enum ChartType{
   pattern,
   value,
   shares,
-  macd
+  macd,
+  gradient
 }
 
 
