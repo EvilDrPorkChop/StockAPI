@@ -54,6 +54,8 @@ def SubmitNotionalOrder(api, symbol, notionalStr, sideStr, orderTypeStr="market"
     print("Order ID: " + order.client_order_id +
           " submitted. Checking status.")
     GetOrderByClientID(api, order.client_order_id)
+
+
 # api = tradeapi.REST(key_id=config.ALPACA_API_KEY, secret_key=config.ALPACA_SECRET_KEY,
 #                     base_url=config.BASE_URL, api_version='v2')
 # SubmitQtyOrder(api, 'AAPL', '1', 'buy')
