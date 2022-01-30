@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ComponentFactoryResolver,
   ComponentRef, ElementRef,
@@ -21,7 +22,8 @@ Chart.register(LinearScale, Title);
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
   @ViewChild("container", { read: ViewContainerRef }) container: ViewContainerRef;

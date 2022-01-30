@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ComponentFactory,
   ComponentFactoryResolver,
@@ -29,7 +30,8 @@ import {Subject} from "rxjs";
 @Component({
   selector: 'app-dashboard-component',
   templateUrl: './dashboard-component.component.html',
-  styleUrls: ['./dashboard-component.component.scss']
+  styleUrls: ['./dashboard-component.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class DashboardComponentComponent implements OnInit {
