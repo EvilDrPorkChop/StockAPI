@@ -17,6 +17,20 @@ import LongInvestor
 app = Flask(__name__)
 api = Api(app)
 
+
+def runPeakTrader(dataInput, startBal, threshold):
+  trad = PeakTrader.Trader(dataInput, startBal, threshold)
+  long = LongInvestor.Trader(dataInput, startBal)
+  trad.Run()
+  long.Run()
+  response = jsonify(states=[state.serialize() for state in trad.env.States], opens=trad.env.Data['open'].tolist(),
+                     longs=[state.serialize() for state in long.env.States],
+                     dates=trad.env.Data['timestamp'].tolist(), isPeaks=trad.isPeaks, isDips=trad.isDips, ma = trad.env.Data['MA'].tolist(),
+                     gradient=trad.env.Data['MAGradient'].tolist())
+  response.headers.add("Access-Control-Allow-Origin", "*")
+  return response
+
+
 def runMacdTrader(dataInput, startBal):
   trad = TraderSD.Trader(dataInput, startBal)
   long = LongInvestor.Trader(dataInput, startBal)
@@ -29,9 +43,9 @@ def runMacdTrader(dataInput, startBal):
   response.headers.add("Access-Control-Allow-Origin", "*")
   return response
 
+
 def runSwingTrader():
   SwingTrader.runTrader()
-
 
 
 def getDataInput(args):
@@ -76,19 +90,21 @@ class StartRun(Resource):
     parser.add_argument('toDate', required=True)
     parser.add_argument('startBalance', required=True)
     parser.add_argument('trader', required=True)
+    parser.add_argument('threshold', required=False)
 
     args = parser.parse_args()
 
     trader = args['trader']
     dataInput = getDataInput(args)
-    if(trader == 'macd'):
+    if (trader == 'macd'):
       return runMacdTrader(dataInput, args['startBalance'])
-    elif(trader == 'swing'):
+    elif (trader == 'swing'):
       runSwingTrader()
       return "Running", 200
+    elif (trader == 'peak'):
+      return runPeakTrader(dataInput, args['startBalance'], args['threshold'])
     else:
       return "Unknown trader type", 400
-
 
 
 class CheckForDailyPatterns(Resource):

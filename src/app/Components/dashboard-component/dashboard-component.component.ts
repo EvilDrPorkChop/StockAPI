@@ -70,6 +70,7 @@ export class DashboardComponentComponent implements OnInit {
   public toDate: FormControl = new FormControl(moment().toDate());
   public chosenStartBal: number = 1000;
   public componentModel: ComponentModel;
+  public chosenThreshold = 0.1;
   public inputs: InputType[];
   public store: AppStore;
   public allInputs = InputType;
@@ -154,7 +155,7 @@ export class DashboardComponentComponent implements OnInit {
     let fromDate = (moment(this.fromDate.value)).format('YYYY-MM-DD')
     let toDate = (moment(this.toDate.value)).format('YYYY-MM-DD')
     if(this.componentModel){
-      this.componentModel.loadData(this.chosenTicker, this.chosenIntervalType, this.chosenInterval, fromDate, toDate, this.chosenStartBal);
+      this.componentModel.loadData(this.chosenTicker, this.chosenIntervalType, this.chosenInterval, fromDate, toDate, this.chosenStartBal, this.chosenThreshold);
     }
   }
 

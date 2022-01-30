@@ -57,7 +57,7 @@ export abstract class ComponentModel {
 
   public abstract getAvailableChartTypes(): ChartType[]
 
-  public abstract loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string, startBal? : number): void
+  public abstract loadData(ticker: string, intervalType: Interval, interval: number, fromDate: string, toDate: string, startBal?: number, threshold?: number): void
 
   public abstract processData(result: any): void
 }

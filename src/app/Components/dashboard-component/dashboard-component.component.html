@@ -55,6 +55,11 @@
         <input class="no-select" matInput value="1" type="number" [(ngModel)]="chosenStartBal">
       </mat-form-field>
 
+      <mat-form-field class="no-select" *ngIf="inputs.includes(allInputs.threshold)"  appearance="outline" [style.width.px]="inputWidth">
+        <mat-label style="color: #efefef">Threshold</mat-label>
+        <input class="no-select" matInput value="1" type="number" [(ngModel)]="chosenThreshold">
+      </mat-form-field>
+
       <button mat-button style="background-color: #2d4250; margin-bottom: 15px;" (click)="getData()" [style.width.px]="inputWidth">Select</button>
     </div>
   </div>

@@ -2,6 +2,7 @@ import {ChartModel, ChartType} from "./Chart.model";
 import {PriceChartModel} from "./PriceChart.model";
 import {PatternChartModel} from "./PatternChart.model";
 import {VolumeChartModel} from "./VolumeChart.model";
+import {GradientChartModel} from "./GradientChart.model";
 
 export class ChartBuilder{
 
@@ -17,6 +18,9 @@ export class ChartBuilder{
     }
     if(type == ChartType.volume){
       return new VolumeChartModel();
+    }
+    if(type == ChartType.gradient){
+      return new GradientChartModel();
     }
     return new ChartModel(ChartType.price);
   }
