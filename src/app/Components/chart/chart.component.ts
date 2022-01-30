@@ -235,7 +235,7 @@ export class ChartComponent implements OnInit {
   }
 
   private resizeCondMeet(){
-    return (this.mouse.x < this.containerPos.right && this.mouse.y < this.containerPos.bottom-100);
+    return (this.mouse.x < this.containerPos.right && this.mouse.y < this.containerPos.bottom-120);
   }
 
   public findClosestValidPosForResize(){
@@ -244,8 +244,8 @@ export class ChartComponent implements OnInit {
     if(this.mouse.x > this.containerPos.right){
       width = Number(this.containerPos.right > this.boxPosition.left) ? this.containerPos.right - this.boxPosition.left : 0;
     }
-    if(this.mouse.y > this.containerPos.bottom-100){
-      height = Number(this.containerPos.bottom-100 > this.boxPosition.top) ? this.containerPos.bottom-100 - this.boxPosition.top : 0;
+    if(this.mouse.y > this.containerPos.bottom-120){
+      height = Number(this.containerPos.bottom-100 > this.boxPosition.top) ? this.containerPos.bottom-120 - this.boxPosition.top : 0;
     }
     return {width, height}
   }
@@ -267,8 +267,8 @@ export class ChartComponent implements OnInit {
     if(this.mouse.y < this.containerPos.top + offsetTop){
       top = this.mouseClick.top + (this.containerPos.top + offsetTop - this.mouseClick.y);
     }
-    if(this.mouse.y > this.containerPos.bottom - offsetBottom - 100){
-      top = this.mouseClick.top + (this.containerPos.bottom - offsetBottom - 100 - this.mouseClick.y);
+    if(this.mouse.y > this.containerPos.bottom - offsetBottom - 120){
+      top = this.mouseClick.top + (this.containerPos.bottom - offsetBottom - 120 - this.mouseClick.y);
     }
 
     return {left, top}
@@ -283,7 +283,7 @@ export class ChartComponent implements OnInit {
       this.mouse.x > this.containerPos.left + offsetLeft &&
       this.mouse.x < this.containerPos.right - offsetRight &&
       this.mouse.y > this.containerPos.top + offsetTop &&
-      this.mouse.y < this.containerPos.bottom - offsetBottom - 100
+      this.mouse.y < this.containerPos.bottom - offsetBottom - 120
     );
   }
 

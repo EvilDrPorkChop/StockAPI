@@ -1,6 +1,6 @@
 <div #box class="resizable-draggable"
      [style.width.px]="width"
-     [style.height.px]="height"
+     [style.height.px]="height+10"
      [style.transform]="'translate3d('+ left + 'px,' + top + 'px,' + '0px)'"
      [class.active]="resizing || moving"
      (mousedown)="emitBringToFront()"
@@ -13,10 +13,11 @@
     <i *ngIf="!visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility_off</i>
     <i *ngIf="showPoints" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="togglePoints()">fiber_manual_record</i>
     <i *ngIf="!showPoints" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="togglePoints()">adjust</i>
-    <a style="color: #9f9f9f; margin-left: 50px; margin-bottom: 20px">{{this.chartModel.getTitle()}}</a>
+    <a style="color: #9f9f9f; margin-left: 50px;">{{this.chartModel.getTitle()}}</a>
   </div>
 
-  <div [hidden]="!visible" style="height: 90%; width: 100%; padding: 5px">
+  <div>
+  <div [hidden]="!visible" style="height: 90%; width: 100%">
     <a class="chart-card" style="width: 100%;" [style.height.px]="getChartHeight()">
       <div class="myChartWrapper" style="height: 100%">
         <div class="myChart" (wheel)="onZoom($event)" [style.width.%]="this.chartWidth" style="height: 95%">
@@ -39,6 +40,7 @@
         <mat-button-toggle value="year">Year</mat-button-toggle>
       </mat-button-toggle-group>
     </a>
+  </div>
   </div>
   <div *ngIf="visible" class="resize-action" (mousedown)="setResizeStatus($event, true)" (mousedown)="emitBringToFront()"></div>
 </div>
