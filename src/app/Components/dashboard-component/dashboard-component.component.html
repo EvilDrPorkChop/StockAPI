@@ -10,10 +10,10 @@
 
   <div class="mover" [class.highlight] = "isHighlighted" (mousedown)="setMoveStatus(true)" cdkDragHandle>
     <i class="material-icons point"  style="color: #9f9f9f" (click)="deleteMyself()">close</i>
-    <i *ngIf="visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility</i>
-    <i *ngIf="!visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility_off</i>
+    <i *ngIf="visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (mousedown)="toggleVisibility()">visibility</i>
+    <i *ngIf="!visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (mousedown)="toggleVisibility()">visibility_off</i>
     <a style="color: #9f9f9f; margin-left: 50px; margin-bottom: 20px">{{this.componentModel.getTitle()}}</a>
-    <i class="material-icons float-end point" style="color: #9f9f9f; padding-right: 2%" (click)="openSelector()">add</i>
+    <i class="material-icons float-end point" style="color: #9f9f9f; padding-right: 2%" (mousedown)="openSelector();emitBringToFront()">add</i>
   </div>
 
   <div class="card-container" [hidden]="!this.visible">

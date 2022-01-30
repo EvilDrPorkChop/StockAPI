@@ -9,10 +9,10 @@
 
   <div class="mover" [class.highlight] = "isHighlighted" (mousedown)="setMoveStatus($event, true)">
     <i class="material-icons point"  style="color: #9f9f9f" (click)="deleteMyself()">close</i>
-    <i *ngIf="visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility</i>
-    <i *ngIf="!visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility_off</i>
-    <i *ngIf="showPoints" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="togglePoints()">fiber_manual_record</i>
-    <i *ngIf="!showPoints" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="togglePoints()">adjust</i>
+    <i *ngIf="visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (mousedown)="toggleVisibility()">visibility</i>
+    <i *ngIf="!visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (mousedown)="toggleVisibility()">visibility_off</i>
+    <i *ngIf="showPoints" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (mousedown)="togglePoints()">fiber_manual_record</i>
+    <i *ngIf="!showPoints" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (mousedown)="togglePoints()">adjust</i>
     <a style="color: #9f9f9f; margin-left: 50px;">{{this.chartModel.getTitle()}}</a>
   </div>
 
