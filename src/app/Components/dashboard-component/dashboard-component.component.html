@@ -2,13 +2,13 @@
      [style.width.px]="width"
      [style.height.px]="height"
      [style.transform]="'translate3d('+ left + 'px,' + top + 'px,' + '0px)'"
-     [class.active]="status === 1"
-     (window:mouseup)="setStatus($event, 0)"
+     [class.active]="resizing || moving"
+     (window:mouseup)="setResizeStatus($event, false); setMoveStatus(false);"
      (mousedown)="emitBringToFront()"
      cdkDrag
 >
 
-  <div class="mover" style="background-color: #262626; margin-bottom: 30px" cdkDragHandle>
+  <div class="mover" style="margin-bottom: 30px" [class.highlight] = "isHighlighted" (mousedown)="setMoveStatus(true)" cdkDragHandle>
     <i class="material-icons point"  style="color: #9f9f9f" (click)="deleteMyself()">close</i>
     <i *ngIf="visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility</i>
     <i *ngIf="!visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility_off</i>
@@ -61,6 +61,5 @@
   <div #container style="background-color: #adadad">
 
   </div>
-
-  <div *ngIf="visible" class="resize-action" (mousedown)="setStatus($event, 1)"></div>
+  <div *ngIf="visible" class="resize-action" (mousedown)="setResizeStatus($event, true); emitBringToFront()"></div>
 </div>

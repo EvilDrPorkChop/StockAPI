@@ -57,15 +57,23 @@ export class AppComponent {
     }
   }
 
+  public unhighlightComponents(){
+    for(let component of this.components){
+      component.setHighlight(false);
+    }
+  }
+
   public bringComponentToFront(component: DashboardComponentComponent){
     const componentIndex = this.components.indexOf(component);
     if(componentIndex !== -1 && componentIndex < this.components.length-1){
-        let viewRef = this.container.detach(componentIndex);
-        this.components.splice(componentIndex, 1);
-        if(viewRef){
-          this.container.insert(viewRef);
-          this.components.push(component);
-        }
+      this.unhighlightComponents();
+      component.setHighlight(true);
+      let viewRef = this.container.detach(componentIndex);
+      this.components.splice(componentIndex, 1);
+      if(viewRef){
+        this.container.insert(viewRef);
+        this.components.push(component);
+      }
     }
   }
 

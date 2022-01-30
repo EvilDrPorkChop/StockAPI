@@ -48,10 +48,11 @@ export class DashboardComponentComponent implements OnInit {
   private boxPosition: { left: number, top: number };
   private containerPos: { left: number, top: number, right: number, bottom: number };
   public mouse: {x: number, y: number}
-  public status: number = 0;
   private mouseClick: {x: number, y: number, left: number, top: number}
   public visible = true;
   public sizeChangedSubject: Subject<number[]> = new Subject<number[]>();
+  public resizing: boolean = false;
+  public moving: boolean = false;
   //-----------------------------------------------------------------------------------------
 
 
@@ -78,6 +79,7 @@ export class DashboardComponentComponent implements OnInit {
   @ViewChild("container") public boundingBox: ElementRef;
   public componentRef: ComponentRef<ChartComponent>;
   public components: ChartComponent[] = []
+  public isHighlighted = false;
 
 
   constructor(store: AppStore, public dialog: MatDialog, private resolver: ComponentFactoryResolver) {
@@ -114,8 +116,16 @@ export class DashboardComponentComponent implements OnInit {
     }
   }
 
+  public unhighlightComponents(){
+    for(let component of this.components){
+      component.setHighlight(false);
+    }
+  }
+
   public bringComponentToFront(component: ChartComponent){
     const componentIndex = this.components.indexOf(component);
+    this.unhighlightComponents();
+    component.setHighlight(true);
     if(componentIndex !== -1 && componentIndex < this.components.length-1){
       let viewRef = this.container.detach(componentIndex);
       this.components.splice(componentIndex, 1);
@@ -156,6 +166,13 @@ export class DashboardComponentComponent implements OnInit {
 
   public get inputWidth(){
     return this.width/(this.inputs.length + 1);
+  }
+
+  public setHighlight(on: boolean){
+    this.isHighlighted = on;
+    if(!this.isHighlighted){
+      this.unhighlightComponents();
+    }
   }
 
   public toggleVisibility(override = null){
@@ -216,20 +233,24 @@ export class DashboardComponentComponent implements OnInit {
     this.containerPos = { left, top, right, bottom };
   }
 
-  setStatus(event: MouseEvent, status: number){
-    if(status === 1) event.stopPropagation();
+  setResizeStatus(event: MouseEvent, status: boolean){
+    if(status) event.stopPropagation();
     else {
       this.loadBox();
       this.sizeChangedSubject.next([this.height, this.width])
     }
-    this.status = status;
+    this.resizing = status;
+  }
+
+  setMoveStatus(status: boolean){
+    this.moving = status
   }
 
   @HostListener('window:mousemove', ['$event'])
   onMouseMove(event: MouseEvent){
     this.mouse = { x: event.clientX, y: event.clientY };
 
-    if(this.status == 1) this.resize();
+    if(this.resizing) this.resize();
   }
 
   private resize(){

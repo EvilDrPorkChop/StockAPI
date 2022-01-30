@@ -7,7 +7,7 @@
      (window:mouseup)="setResizeStatus($event, false); setMoveStatus($event, false)"
 >
 
-  <div class="mover" style="background-color: #262626;" (mousedown)="setMoveStatus($event, true)">
+  <div class="mover" [class.highlight] = "isHighlighted" (mousedown)="setMoveStatus($event, true)">
     <i class="material-icons point"  style="color: #9f9f9f" (click)="deleteMyself()">close</i>
     <i *ngIf="visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility</i>
     <i *ngIf="!visible" class="material-icons point"  style="color: #9f9f9f; margin-left: 10px" (click)="toggleVisibility()">visibility_off</i>
@@ -40,5 +40,5 @@
       </mat-button-toggle-group>
     </a>
   </div>
-  <div *ngIf="visible" class="resize-action" (mousedown)="setResizeStatus($event, true)"></div>
+  <div *ngIf="visible" class="resize-action" (mousedown)="setResizeStatus($event, true)" (mousedown)="emitBringToFront()"></div>
 </div>

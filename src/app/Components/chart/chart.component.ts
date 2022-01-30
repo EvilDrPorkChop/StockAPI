@@ -29,7 +29,7 @@ export class ChartComponent implements OnInit {
 
   public chartModel: ChartModel;
   public currentScale: string = "day";
-  public minWidth = 323;
+  public minWidth = 360;
   public minHeight = 300;
   public previousHeight = this.minHeight;
   public width: number = this.minWidth;
@@ -61,6 +61,8 @@ export class ChartComponent implements OnInit {
   public chartWidth = 100;
   public chartHeight = 80;
 
+  public isHighlighted = false;
+
   constructor(private changeDetector: ChangeDetectorRef) {
 
   }
@@ -89,6 +91,10 @@ export class ChartComponent implements OnInit {
 
   public emitBringToFront(){
     this.bringToFrontEvent.emit(this);
+  }
+
+  public setHighlight(on: boolean){
+    this.isHighlighted = on;
   }
 
   public getChartHeight(){
