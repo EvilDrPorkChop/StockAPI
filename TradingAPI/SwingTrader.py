@@ -225,29 +225,29 @@ def openPositionsFile():
         data = json.load(f)
         return data
 
-
-api = tradeapi.REST(key_id=config.ALPACA_API_KEY, secret_key=config.ALPACA_SECRET_KEY,
-                    base_url=config.BASE_URL, api_version='v2')
-# buyTodaysStocks(api)
-# checkPosition(api, 'AAPL')
-getPositions(api)
-data = openPositionsFile()
-while True:
-    for stock in data:
-        # print("this is the stock" + stock['symbol'])
-        if stock['symbol'] != "":
-            position = checkPosition(api, stock['symbol'])
-            currentPc = list(position)[0]
-            currentQty = list(position)[1]
-            operation = comparePL(
-                api, stock['symbol'], currentQty, currentPc, stock['algo_mode'])
-            print(operation)
-            if operation != 'Sold':
-                stock['algo_mode'] = operation
-                with open("positions.json", "w") as jsonFile:
-                    json.dump(data, jsonFile)
-            else:
-                time.sleep(5)
-                getPositions(api)
-                data = openPositionsFile()
-    time.sleep(2)
+def runTrader():
+  api = tradeapi.REST(key_id=config.ALPACA_API_KEY, secret_key=config.ALPACA_SECRET_KEY,
+                      base_url=config.BASE_URL, api_version='v2')
+  # buyTodaysStocks(api)
+  # checkPosition(api, 'AAPL')
+  getPositions(api)
+  data = openPositionsFile()
+  while True:
+      for stock in data:
+          # print("this is the stock" + stock['symbol'])
+          if stock['symbol'] != "":
+              position = checkPosition(api, stock['symbol'])
+              currentPc = list(position)[0]
+              currentQty = list(position)[1]
+              operation = comparePL(
+                  api, stock['symbol'], currentQty, currentPc, stock['algo_mode'])
+              print(operation)
+              if operation != 'Sold':
+                  stock['algo_mode'] = operation
+                  with open("positions.json", "w") as jsonFile:
+                      json.dump(data, jsonFile)
+              else:
+                  time.sleep(5)
+                  getPositions(api)
+                  data = openPositionsFile()
+      time.sleep(2)

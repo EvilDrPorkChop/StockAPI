@@ -29,12 +29,14 @@ export class AppStore {
     })
   }
 
-  public startRun(ticker:string, intervalType:string, interval:number, fromDate: string, toDate: string, startBalance: number){
-    let url = "http://localhost:701/startRun?ticker="+ticker+"&interval="+interval+"&intervalType="
-      +intervalType+"&fromDate="+fromDate+"&toDate="+toDate+"&startBalance="+startBalance;
+  public startRun(trader: string, ticker:string, intervalType:string, interval:number, fromDate: string, toDate: string, startBalance: number){
+    let url = "http://localhost:701/startRun?&ticker="+ticker+"&interval="+interval+"&intervalType="
+      +intervalType+"&fromDate="+fromDate+"&toDate="+toDate+"&startBalance="+startBalance+"&trader="+trader;
 
     this.http.get<any>(url).subscribe((data) => {
-      console.log(data);
+      data.fromDate = fromDate;
+      data.toDate = toDate;
+      data.ticker = ticker;
       this.stateDataObserver.next(data);
     })
   }
@@ -71,6 +73,9 @@ export class StateData{
   public dates: any[] = [];
   public macd: number[] = [];
   public signals: number[] = [];
+  public ticker: string = "";
+  public fromDate: string= "";
+  public toDate: string= "";
 }
 
 export class State{

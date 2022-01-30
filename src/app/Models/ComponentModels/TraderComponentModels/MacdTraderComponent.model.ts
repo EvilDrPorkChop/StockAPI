@@ -1,51 +1,36 @@
-import { Component, OnInit } from '@angular/core';
-import {filter, Subscription} from "rxjs";
-import {Data, DataSet} from "../Models/chartData.model";
-import {AppStore, StateData, TickerData} from "../app.store";
-import {ChartOptions} from "chart.js";
-import {FormControl} from "@angular/forms";
-import * as moment from "moment";
+import {TraderComponent, TraderType} from "./TraderComponent.model";
+import {AppStore, StateData} from "../../../app.store";
+import {InputType} from "../../Shared/input.model";
+import {Data, DataSet} from "../../Shared/chartData.model";
+import {ChartType} from "../../ChartModels/Chart.model";
 
-@Component({
-  selector: 'app-trader-data',
-  templateUrl: './trader-data.component.html',
-  styleUrls: ['./trader-data.component.css']
-})
-export class TraderDataComponent implements OnInit {
-
-  title = 'TradingVisualizer';
-  mode: string = "Train";
-
-  public tickerDataSubscription: Subscription = new Subscription();
-  public stateDataSubscription: Subscription = new Subscription();
-  public tickerData: Data = new Data();
-  public valueData: Data = new Data();
-  public volumeData: Data = new Data();
-  public shareData: Data = new Data();
-  public macData: Data = new Data();
-  public chosenTicker: string = "aapl";
-  public intervalTypes: Interval[] = this.generateIntervals();
-  public chosenIntervalType: Interval = this.intervalTypes[1];
-  public chosenInterval: number = 1;
-  public startBalance: number = 1000;
-  public fromDate: FormControl = new FormControl(moment().subtract(5, 'days').toDate());
-  public toDate: FormControl = new FormControl(moment().toDate());
-
-  public currentScale: string = "minute";
-
-  constructor(public store:AppStore) {
+export class MacdTraderComponent extends TraderComponent{
+  constructor(store: AppStore) {
+    super(store, TraderType.macd);
   }
 
-  ngOnInit(){
-    this.stateDataSubscription = this.store.stateDataObserver.pipe(filter(r=> r!=null)).subscribe(result => {
-      if(result){
-        this.proccessStateData(result)
-      }
-    })
-    this.fromDate.setValue(moment().subtract(5, 'days').toDate());
+  public override getInputs(): InputType[] {
+    let inputs: InputType[] = []
+    inputs.push(InputType.ticker);
+    inputs.push(InputType.interval);
+    inputs.push(InputType.intervalType);
+    inputs.push(InputType.fromDate);
+    inputs.push(InputType.toDate);
+    inputs.push(InputType.startBalance);
+    return inputs;
   }
 
-  public proccessStateData(result: StateData){
+  public getAvailableChartTypes(): ChartType[]{
+    let types: ChartType[] = []
+    types.push(ChartType.price);
+    types.push(ChartType.value);
+    types.push(ChartType.volume);
+    types.push(ChartType.shares);
+    types.push(ChartType.macd);
+    return types;
+  }
+
+  public processData(result: StateData){
     let tickerdata = new Data();
     let valueData = new Data();
     let volumeData = new Data();
@@ -221,6 +206,12 @@ export class TraderDataComponent implements OnInit {
     macdDataset.backgroundColor = macdDataset.borderColor;
     signalDataset.backgroundColor = signalDataset.borderColor;
 
+    valueData.chartType = ChartType.value;
+    tickerdata.chartType = ChartType.price;
+    volumeData.chartType = ChartType.volume;
+    shareData.chartType = ChartType.shares;
+    macData.chartType = ChartType.macd;
+
     valueData.datasets.push(valueDataset);
     valueData.datasets.push(longDataset);
     tickerdata.datasets.push(priceDataset);
@@ -229,74 +220,10 @@ export class TraderDataComponent implements OnInit {
     macData.datasets.push(macdDataset);
     macData.datasets.push(signalDataset);
 
-    this.tickerData = tickerdata;
-    this.valueData = valueData;
-    this.volumeData = volumeData;
-    this.shareData = shareData;
-    this.macData = macData;
+    this.datas.push(tickerdata)
+    this.datas.push(valueData)
+    this.datas.push(volumeData)
+    this.datas.push(shareData)
+    this.datas.push(macData)
   }
-
-  public options(): ChartOptions|any {
-    return{
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x:{
-          type: 'time',
-          time: {
-            unit: this.currentScale
-          }
-        }
-      }
-    }
-  }
-
-  public chartOptions: ChartOptions = {
-    responsive: true
-  };
-
-  public chartLabels :any[] = [];
-
-  public chartLegend = false;
-
-  public setTest(){
-    this.mode = "Test";
-  }
-
-  public setTrain(){
-    this.mode = "Train"
-  }
-
-  public startRun(){
-    let fromDate = (moment(this.fromDate.value)).format('YYYY-MM-DD');
-    let toDate = (moment(this.toDate.value)).format('YYYY-MM-DD');
-    this.store.startRun(this.chosenTicker, this.chosenIntervalType.key, this.chosenInterval, fromDate, toDate, this.startBalance);
-  }
-
-  public generateIntervals() {
-    let intervals = [
-      new Interval("minute", "Minute"),
-      new Interval("hour", "Hour"),
-      new Interval("day", "Day")
-    ]
-    return intervals;
-  }
-}
-export class Period{
-  key: string = "";
-  name: string = "";
-  constructor(key: string, name: string) {
-    this.key = key;
-    this.name = name;
-  }
-}
-
-export class Interval{
-  key: string = "";
-  name: string = "";
-  constructor(key: string, name: string) {
-    this.key = key;
-    this.name = name;
-  }
-
 }

@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {ChartSelectorData, ChartType} from "../../Models/chart.model";
-import {ComponentType} from "../../Models/dashboardComponent.model";
+import {ChartType} from "../../Models/ChartModels/Chart.model";
+import {ComponentType} from "../../Models/ComponentModels/Component.model";
 
 @Component({
   selector: 'app-chart-selector',
@@ -17,7 +17,14 @@ export class ChartSelectorComponent {
   }
 
   onNoClick(): void {
+    this.data.isCancelled = true;
     this.dialogRef.close();
   }
 
+}
+
+export interface ChartSelectorData {
+  chartType: ChartType;
+  availableChartTypes: ChartType[];
+  isCancelled: boolean;
 }

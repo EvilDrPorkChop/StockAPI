@@ -1,4 +1,4 @@
-import {ChartType} from "./chart.model";
+import {ChartType} from "../ChartModels/Chart.model";
 
 export class Data {
   constructor() {

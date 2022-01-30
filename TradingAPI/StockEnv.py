@@ -117,16 +117,15 @@ class StockEnv:
         self.State.Action = "Sell"
         self.Shares.remove(shares[0])
 
-
   def calcMA(self, n):
     if self.TimeStep == 0:
       self.Data.at[self.TimeStep, 'MA'] = self.Data['open'].iloc[0]
     else:
-      startIndex = self.TimeStep-n
+      startIndex = self.TimeStep - n
       if startIndex < 0:
         startIndex = 0
         n = self.TimeStep
       total = 0
       for i in range(startIndex, self.TimeStep):
         total += self.Data['open'].iloc[self.TimeStep]
-      self.Data.at[self.TimeStep, 'MA'] = float(total/n)
+      self.Data.at[self.TimeStep, 'MA'] = float(total / n)

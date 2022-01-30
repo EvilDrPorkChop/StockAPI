@@ -2,29 +2,34 @@
   outline-style: solid;
   border-radius: 10px;
   outline-color: #262626;
+  flex-direction: row;
+  justify-content: center;
+  overflow: hidden;
+  position: absolute;
+  background-color: #2d2d2d;
+  /*
   &.active {
     outline: dashed #262626;
     transform: translateY(-0.25rem);
-    background-color: rgba(80, 80, 80, 0.05);
-    box-shadow: 0px 3px 15px rgba(152, 152, 152, 0.2);
- }
+    box-shadow: 0px 3px 15px rgba(107, 107, 107, 0.2);
+  }
+   */
+  span:first-of-type {
+    position: absolute;
+    left: 50%;
+    transform: translate3d(-50%, -100%, 0);
+  }
 
-span:first-of-type {
-  position: absolute;
-  left: 50%;
-  transform: translate3d(-50%, -100%, 0);
-}
+  span:nth-of-type(2) {
+    position: absolute;
+    top: 50%;
+    transform: translate3d(-100%, -50%, 0);
+  }
 
-span:nth-of-type(2) {
-  position: absolute;
-  top: 50%;
-  transform: translate3d(-100%, -50%, 0);
-}
-
-span:nth-of-type(3) {
-  position: absolute;
-  transform: translate3d(-100%, -100%, 0);
-}
+  span:nth-of-type(3) {
+    position: absolute;
+    transform: translate3d(-100%, -100%, 0);
+  }
 }
 
 .resize-action {
@@ -33,20 +38,32 @@ span:nth-of-type(3) {
   top: 100%;
   transform: translate3d(-50%, -50%, 0) rotateZ(45deg);
   border-style: solid;
-  border-width: 8px;
-  border-color: transparent transparent transparent #e7e7e7;
+  border-width: 12px;
+  border-color: transparent transparent transparent #a2a2a2;
   &:hover, &:active {
     cursor: nwse-resize;
   }
 }
 
 .mover {
+  user-select: none;
+  margin-bottom: 30px;
+  padding-left: 8px;
+  padding-top: 10px;
+  background-color: #2d2d2d;
+  border: #2d2d2d;
+  border-bottom: #262626;
+  border-style: solid;
+  transform: translate3d(-8px, -10px, 0);
+  width: 102%;
   &:hover{
     cursor: grab;
   }
+  &.highlight {
+    background-color: #262626;
+  }
   &:active{
     cursor: grabbing;
-    box-shadow: 0px 0px 15px rgba(152, 152, 152, 0.2);
   }
 }
 
@@ -54,4 +71,12 @@ span:nth-of-type(3) {
   &:hover{
     cursor: pointer;
   }
+}
+
+.card {
+  user-select: none;
+}
+
+.no-select {
+  user-select: none;
 }

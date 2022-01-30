@@ -3,5 +3,6 @@ export enum InputType{
   interval,
   intervalType,
   fromDate,
-  toDate
+  toDate,
+  startBalance
 }

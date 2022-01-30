@@ -1,54 +1,66 @@
 import {
-  Component, ComponentFactory,
-  ComponentFactoryResolver, ComponentRef,
+  ChangeDetectionStrategy,
+  Component,
+  ComponentFactory,
+  ComponentFactoryResolver,
+  ComponentRef,
   ElementRef,
   EventEmitter,
   HostListener,
   Input,
   OnInit,
   Output,
-  ViewChild, ViewContainerRef
+  ViewChild,
+  ViewContainerRef
 } from '@angular/core';
 import {AppStore} from "../../app.store";
-import {ComponentType, DashboardComponentModel} from "../../Models/dashboardComponent.model";
+import {ComponentModel, ComponentType} from "../../Models/ComponentModels/Component.model";
 import {FormControl} from "@angular/forms";
 import * as moment from "moment";
-import {Interval} from "../../Models/intervals.model";
-import {Data} from "../../Models/chartData.model";
-import {InputType} from "../../Models/input.model";
-import {ChartType} from "../../Models/chart.model";
+import {Interval} from "../../Models/Shared/intervals.model";
+import {InputType} from "../../Models/Shared/input.model";
+import {ChartType} from "../../Models/ChartModels/Chart.model";
 import {ChartSelectorComponent} from "../chart-selector/chart-selector.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ChartComponent} from "../chart/chart.component";
+import {ComponentBuilder} from "../../Models/ComponentModels/ComponentBuilder";
+import {TraderType} from "../../Models/ComponentModels/TraderComponentModels/TraderComponent.model";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-dashboard-component',
   templateUrl: './dashboard-component.component.html',
-  styleUrls: ['./dashboard-component.component.scss']
+  styleUrls: ['./dashboard-component.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class DashboardComponentComponent implements OnInit {
 
   //Stuff For Resizing ----------------------------------------------------------------------
   public minWidth = 800;
-  public minHeight = 110;
+  public minHeight = 120;
   public width: number = this.minWidth;
-  public height: number = this.minHeight;
+  public height: number = 500;
+  public previousHeight = this.height;
   public left: number = 100;
   public top: number = 100;
   @ViewChild("box") public box: ElementRef;
   private boxPosition: { left: number, top: number };
   private containerPos: { left: number, top: number, right: number, bottom: number };
   public mouse: {x: number, y: number}
-  public status: number = 0;
   private mouseClick: {x: number, y: number, left: number, top: number}
   public visible = true;
+  public sizeChangedSubject: Subject<number[]> = new Subject<number[]>();
+  public resizing: boolean = false;
+  public moving: boolean = false;
   //-----------------------------------------------------------------------------------------
 
 
   //Actual Component stuff ------------------------------------------------------------------
   @Input() componentType: ComponentType;
+  @Input() traderType: TraderType;
   @Output() deleteEvent = new EventEmitter<DashboardComponentComponent>();
+  @Output() bringToFrontEvent = new EventEmitter<DashboardComponentComponent>();
   public chosenTicker: string = "aapl";
   public intervalTypes: Interval[] = Interval.getIntervals();
   public chosenIntervalType: Interval = this.intervalTypes[1];
@@ -56,29 +68,39 @@ export class DashboardComponentComponent implements OnInit {
   public currentScale: string = "minute";
   public fromDate: FormControl = new FormControl(moment().subtract(5, 'days').toDate());
   public toDate: FormControl = new FormControl(moment().toDate());
-  public componentModel: DashboardComponentModel;
+  public chosenStartBal: number = 1000;
+  public componentModel: ComponentModel;
   public inputs: InputType[];
   public store: AppStore;
   public allInputs = InputType;
   //-----------------------------------------------------------------------------------------
 
   @ViewChild("container", { read: ViewContainerRef }) container: ViewContainerRef;
+  @ViewChild("container") public boundingBox: ElementRef;
   public componentRef: ComponentRef<ChartComponent>;
   public components: ChartComponent[] = []
+  public isHighlighted = false;
 
 
   constructor(store: AppStore, public dialog: MatDialog, private resolver: ComponentFactoryResolver) {
-    this.componentModel = new DashboardComponentModel(this.componentType, store)
+    let compBuilder = new ComponentBuilder(store);
+    this.componentModel = compBuilder.buildComponentModel(this.componentType, this.traderType);
     this.inputs = this.componentModel.getInputs();
     this.store = store
   }
 
   public addComponent(chartType: ChartType){
-    const factory: ComponentFactory<ChartComponent> = this.resolver.resolveComponentFactory(ChartComponent);
-    this.componentRef = this.container.createComponent(factory);
+    this.componentRef = this.container.createComponent(ChartComponent);
     this.componentRef.instance.chartType = chartType;
     this.componentRef.instance.data = this.componentModel.getData(0);
+    this.componentRef.instance.outerContainer = this.boundingBox;
+    this.componentRef.instance.outerContainerHeight = this.getHeight();
+    this.componentRef.instance.outerContainerWidth = this.getWidth();
+    this.componentRef.instance.outerContainerEvent = this.sizeChangedSubject.asObservable();
     this.components.push(this.componentRef.instance)
+    this.componentRef.instance.bringToFrontEvent.subscribe(comp => {
+      this.bringComponentToFront(comp);
+    })
     this.componentModel.charts = this.components;
     this.componentRef.instance.deleteEvent.subscribe((result: ChartComponent) => this.deleteHandler(result))
     this.componentModel.updateCharts();
@@ -94,8 +116,29 @@ export class DashboardComponentComponent implements OnInit {
     }
   }
 
+  public unhighlightComponents(){
+    for(let component of this.components){
+      component.setHighlight(false);
+    }
+  }
+
+  public bringComponentToFront(component: ChartComponent){
+    const componentIndex = this.components.indexOf(component);
+    this.unhighlightComponents();
+    component.setHighlight(true);
+    if(componentIndex !== -1 && componentIndex < this.components.length-1){
+      let viewRef = this.container.detach(componentIndex);
+      this.components.splice(componentIndex, 1);
+      if(viewRef){
+        this.container.insert(viewRef);
+        this.components.push(component);
+      }
+    }
+  }
+
   ngOnInit() {
-    this.componentModel = new DashboardComponentModel(this.componentType, this.store)
+    let compBuilder = new ComponentBuilder(this.store);
+    this.componentModel = compBuilder.buildComponentModel(this.componentType, this.traderType);
     this.inputs = this.componentModel.getInputs();
   }
 
@@ -108,11 +151,28 @@ export class DashboardComponentComponent implements OnInit {
   public getData(){
     let fromDate = (moment(this.fromDate.value)).format('YYYY-MM-DD')
     let toDate = (moment(this.toDate.value)).format('YYYY-MM-DD')
-    this.componentModel.loadData(this.chosenTicker, this.chosenIntervalType, this.chosenInterval, fromDate, toDate);
+    if(this.componentModel){
+      this.componentModel.loadData(this.chosenTicker, this.chosenIntervalType, this.chosenInterval, fromDate, toDate, this.chosenStartBal);
+    }
+  }
+
+  public getWidth(){
+    return this.width;
+  }
+
+  public getHeight(){
+    return this.height;
   }
 
   public get inputWidth(){
     return this.width/(this.inputs.length + 1);
+  }
+
+  public setHighlight(on: boolean){
+    this.isHighlighted = on;
+    if(!this.isHighlighted){
+      this.unhighlightComponents();
+    }
   }
 
   public toggleVisibility(override = null){
@@ -123,16 +183,11 @@ export class DashboardComponentComponent implements OnInit {
       this.visible = !this.visible;
     }
     if(!this.visible){
+      this.previousHeight = this.height;
       this.height = 50;
-      for(let chart of this.components){
-        chart.toggleVisibility(false);
-      }
     }
     else{
-      this.height = this.minHeight;
-      for(let chart of this.components){
-        chart.toggleVisibility(true);
-      }
+      this.height = this.previousHeight;
     }
   }
 
@@ -140,11 +195,13 @@ export class DashboardComponentComponent implements OnInit {
   openSelector(): void {
     const dialogRef = this.dialog.open(ChartSelectorComponent, {
       width: '250px',
-      data: {chartType: this.componentModel.getAvailableChartTypes()[0], availableChartTypes: this.componentModel.getAvailableChartTypes()},
+      data: {chartType: this.componentModel.getAvailableChartTypes()[0], availableChartTypes: this.componentModel.getAvailableChartTypes(), isCancelled: false},
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.addComponent(result);
+      if(!result.isCancelled){
+        this.addComponent(result.chartType);
+      }
       console.log('The dialog was closed');
       console.log(result);
     });
@@ -154,7 +211,9 @@ export class DashboardComponentComponent implements OnInit {
     this.deleteEvent.emit(this);
   }
 
-
+  public emitBringToFront(){
+    this.bringToFrontEvent.emit(this);
+  }
 
 
 
@@ -174,24 +233,35 @@ export class DashboardComponentComponent implements OnInit {
     this.containerPos = { left, top, right, bottom };
   }
 
-  setStatus(event: MouseEvent, status: number){
-    if(status === 1) event.stopPropagation();
-    else this.loadBox();
-    this.status = status;
+  setResizeStatus(event: MouseEvent, status: boolean){
+    if(status) event.stopPropagation();
+    else {
+      this.loadBox();
+      this.sizeChangedSubject.next([this.height, this.width])
+    }
+    this.resizing = status;
+  }
+
+  setMoveStatus(status: boolean){
+    this.moving = status
   }
 
   @HostListener('window:mousemove', ['$event'])
   onMouseMove(event: MouseEvent){
     this.mouse = { x: event.clientX, y: event.clientY };
 
-    if(this.status == 1) this.resize();
+    if(this.resizing) this.resize();
   }
 
   private resize(){
-      this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
-      if(this.width < this.minWidth){
-        this.width = this.minWidth;
-      }
+    this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
+    this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
+    if(this.width < this.minWidth){
+      this.width = this.minWidth;
+    }
+    if(this.height < this.minHeight){
+      this.height = this.minHeight;
+    }
   }
   //-------------------------------------------------------------------------------------------------------------------
 }
